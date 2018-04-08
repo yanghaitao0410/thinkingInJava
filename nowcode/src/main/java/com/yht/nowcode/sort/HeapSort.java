@@ -74,10 +74,15 @@ public class HeapSort {
 
     }
 
+    /**
+     * 将当前数组调成大根堆形式
+     * @param arr
+     * @param index
+     */
     public void heapInsert(int[] arr, int index) {
         while(arr[index] > arr[(index - 1) / 2]) { //若当前节点比父节点大
             CompareUtil.swop(arr, index, (index - 1) / 2); //将当前节点与父节点交换
-            index = (index - 1) / 2; //当前节点的位置
+            index = (index - 1) / 2; //更新当前节点的位置，继续看当前位置和父节点的大小
         }
     }
 
