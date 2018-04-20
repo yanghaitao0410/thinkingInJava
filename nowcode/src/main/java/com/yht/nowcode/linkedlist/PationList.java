@@ -79,12 +79,91 @@ public class PationList {
 
     /**
      * 优解方案：时间复杂度O(N),额外空间复杂度O(1)
+     *
+     *  思路：准备3个引用：small、equal、big
+     *  遍历整个链表，找到最找出现的小于值、相等值、大于值然后让上面的3个引用指向他们
+     *          例如：7->3->4->6->0->4     比较值为4
+     *          small->3->0
+     *          equal->4->4
+     *          big->7->6
+     *  重新遍历链表，若遍历到的节点已经被引用指向了，跳过（注意是内存地址相等==）
+     *  出现的其他节点挂在上面对应3条子链表的末端
+     *  最后将这3个链表连接
+     *  需要考虑某一种值没有的情况、只有一种值的情况
      * @param head
      * @return
      */
-    public Node PationList2(Node head) {
+    public static Node pationList2(Node head, int pivot) {
+        Node small = null, equal = null, big = null;
+        Node sEnd = null, eEnd = null, bEnd = null;
+        Node cur = head;
 
-        return null;
+        /**
+         * 在子链表上挂Node
+         */
+        while(cur != null) {
+            if(pivot < cur.value && big == null) {
+                big = cur;
+                bEnd = cur;
+            } else if(pivot < cur.value && big != null) {
+                bEnd.next = cur;
+                bEnd = cur;
+            }
+            if(pivot == cur.value && equal == null) {
+                equal = cur;
+                eEnd = cur;
+            }else if(pivot == cur.value && equal != null) {
+                eEnd.next = cur;
+                eEnd = cur;
+            }
+            if(pivot > cur.value && small == null) {
+                small = cur;
+                sEnd = cur;
+            }else if(pivot > cur.value && small != null) {
+                sEnd.next = cur;
+                sEnd = cur;
+            }
+            cur = cur.next;
+        }
+
+        /**
+         * 若只有一种值，直接返回对应区间的子节点
+         */
+        if(small != null && big == null && equal == null) {
+            sEnd.next = null;
+            return small;
+        }
+        if(small == null && big != null && equal == null) {
+            bEnd.next = null;
+            return big;
+        }
+        if(small != null && big == null && equal != null) {
+            eEnd.next = null;
+            return equal;
+        }
+        /**
+         * 出现两种值以上，拼接
+         */
+        if(small != null) {
+            head = small;
+            if(equal != null) {
+                sEnd.next = equal;
+                if(big != null) {
+                    eEnd.next = big;
+                    bEnd.next = null;
+                }else {
+                    eEnd.next = null;
+                }
+            }else {
+                sEnd.next = big;
+                bEnd.next = null;
+            }
+        }else {
+            head = equal;
+            eEnd.next = big;
+            bEnd.next = null;
+        }
+        return head;
     }
 
 }
