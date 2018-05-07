@@ -1,5 +1,7 @@
 package com.yht.nowcode.linkedlist;
 
+import java.util.Objects;
+
 public class Node {
     public int value;
     public Node next;
@@ -7,12 +9,18 @@ public class Node {
         this.value = value;
     }
 
-    public void setNext(Node next) {
-        this.next = next;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return value == node.value ;
     }
 
-    public Node getNext() {
-        return next;
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(value);
     }
 
     @Override
