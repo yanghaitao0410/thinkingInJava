@@ -11,21 +11,60 @@ import java.util.Set;
  * <p>
  * 思路：需要先通过Node firstLoopNode(Node head)判断这两个链表是否有环:有如下几种情况：
  * 第一种情况：若head1返回结果为null，head2返回结果为null----->两个链表都是单链表
- * 这两个链表只有两种可能性：相交或平行
- * 解法1：将head1放入Set集合中，然后遍历head2，若遍历过程中发现Set中已经存在当前节点---->相交 返回当前节点
- * 否则平行
+ * 第二种情况：两个链表一个有环，一个无环----> 不可能相交
+ * 第三种情况：两个链表都有环
  */
 public class LoopList {
 
     public static Node get2NodeFirstLoop(Node head1, Node head2) {
-        Node node1 = firstLoopNode2(head2);
+        Node node1 = firstLoopNode2(head1);
         Node node2 = firstLoopNode2(head2);
 
-        if (node1 == null && node2 == null) {
-            return get2NoLoopFirstNode1(head1, head2);
+        if (node1 == null && node2 == null) { //两个链表都是单链表
+            return get2NoLoopFirstNode1(head1, head2, null);
             //return get2NoLoopFirstNode2(head1, head2);
+        } else if (node1 != null && node2 != null) { //两个链表都有环
+            return get2LoopFirstNode(head1, node1, head2, node2);
+        } else {
+            //两个链表一个有环一个无环：返回null
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * 两个链表都有环相交可能出现3种情况：
+     *      1：两个链表不相交，各自单独成环
+     *          移动第一个链表的节点（从第一个入环节点开始移动），移动每步都与第二个链表的入环节点比较，
+     *          看是否是同一个节点，若再次移动到第一个入环节点还未匹配到，说明单独成环不相交，返回null
+     *      2：两个链表先相交，然后共享环
+     *      3：两个链表在环上相交
+     * @param loop1 链表1的第一个入环节点
+     * @param loop2 链表2的第一个入环节点
+     * @param head1 链表1的头节点
+     * @param head2 链表2的头节点
+     * @return
+     */
+    public static Node get2LoopFirstNode(Node head1, Node loop1, Node head2, Node loop2) {
+
+        if(loop1 != loop2) {
+            Node cur = loop1;
+            do{
+                if(cur == loop2) {
+                    /**
+                     * 情况3：返回loop1或loop2都行
+                     */
+                    return loop1;
+                }
+                cur = cur.next;
+            }while(cur != loop1);
+            /**情况1 没有相交节点，返回null*/
+            return null;
+        } else{
+            /**
+             * 情况2：入环节点下面的节点不考虑，变成了求两个无环链表相交节点的问题 截至点为loop1或loop2(这两个节点实际为一个)
+             */
+            return get2NoLoopFirstNode2(head1, head2, loop1);
+        }
     }
 
     /**
@@ -33,19 +72,21 @@ public class LoopList {
      * 解法1：将head1放入Set集合中，然后遍历head2，若遍历过程中发现Set中已经存在当前节点---->相交 返回当前节点
      * 否则平行
      *
+     *  增加截至点，之前截止点位链表的最后一个节点
      * @param head1
      * @param head2
+     * @param endNode 比较的截至点 传入该值说明这两个链表相交
      * @return
      */
-    public static Node get2NoLoopFirstNode1(Node head1, Node head2) {
+    public static Node get2NoLoopFirstNode1(Node head1, Node head2, Node endNode) {
         Set<Node> nodeSet = new HashSet<>();
         Node curNode = head1;
-        while (curNode != null) {
+        while (curNode != endNode) {
             nodeSet.add(curNode);
             curNode = curNode.next;
         }
         curNode = head2;
-        while (curNode != null) {
+        while (curNode != endNode) {
             if (nodeSet.contains(curNode)) {
                 return curNode;
             }
@@ -61,59 +102,69 @@ public class LoopList {
      * 并判断当前节点是否相等，相等的节点即为第一个相交节点。
      * eg:head1长度100， head2长度80，那么head1先走20步，然后共同向下移动，并判断节点是否相同
      *
+     * @param head1  链表1的头节点
+     * @param head2 链表2的头节点
+     * @param endNode 截至点，若截至点为null，则默认截至点为链表的尾节点 传入该值说明这两个链表相交
      * @return
      */
-    public static Node get2NoLoopFirstNode2(Node head1, Node head2) {
-        Object[] nodeArr1 = getNodeInfo(head1);
-        Object[] nodeArr2 = getNodeInfo(head2);
-        if (nodeArr1[1] != nodeArr2[1]) {
+    public static Node get2NoLoopFirstNode2(Node head1, Node head2, Node endNode) {
+        Object[] nodeArr1 = getNodeInfo(head1, endNode);
+        Object[] nodeArr2 = getNodeInfo(head2, endNode);
+        if (endNode == null && nodeArr1[1] != nodeArr2[1]) {
             return null;
         }
+
         int count1 = Integer.parseInt(nodeArr1[0] + "");
         int count2 = Integer.parseInt(nodeArr2[0] + "");
         if (count1 > count2) {
-            return getNode(head1, head2, count1, count2);
-        }else {
-            return getNode(head2, head1, count2, count1);
+            return getNode(head1, head2, count1, count2, endNode);
+        } else {
+            return getNode(head2, head1, count2, count1, endNode);
         }
     }
 
     /**
      * 获得链表的长度和最后一个节点
-     * @param head
+     *
+     * @param head 链表的头节点
+     * @param endNode 截至点，若为null默认为该链表的尾节点
      * @return Object[2]{length, endNode}
      */
-    public static Object[] getNodeInfo(Node head) {
+    public static Object[] getNodeInfo(Node head, Node endNode) {
         int count = 0;
-        Node endNode = null;
-        while (head != null) {
+        Node result = null;
+        while (head != endNode) {
             count++;
-            endNode = head;
+            result = head;
             head = head.next;
         }
-        return new Object[]{count, endNode};
+        return new Object[]{count, result};
     }
 
     /**
-     *较长链表先移动至和短链表相同的长度，然后这两条链表共同移动，并比较节点是否是同一个
-     * @param maxLengthNode
-     * @param minLengthNode
-     * @return
+     * 较长链表先移动至和短链表相同的长度，然后这两条链表共同移动，并比较节点是否是同一个
+     *
+     * @param maxLengthNode 较长链表的头节点
+     * @param minLengthNode 较短链表的头节点
+     * @param maxCount 长链表的长度
+     * @param minCount 短链表的长度
+     * @param endNode 截至点  默认截至点为链表的尾节点
+     * @return  相交节点
      */
-    public static Node getNode(Node maxLengthNode, Node minLengthNode, int maxCount, int minCount) {
+    public static Node getNode(Node maxLengthNode, Node minLengthNode, int maxCount, int minCount, Node endNode) {
         int distance = maxCount - minCount;
         while (distance > 0) {
             maxLengthNode = maxLengthNode.next;
             distance--;
         }
-        while (maxLengthNode != null) {
+        while (maxLengthNode != endNode) {
             if (maxLengthNode == minLengthNode) {
-                return  maxLengthNode;
+                return maxLengthNode;
             }
             maxLengthNode = maxLengthNode.next;
             minLengthNode = minLengthNode.next;
         }
-        return  null;
+        return null;
     }
 
     /**
