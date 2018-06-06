@@ -1,4 +1,4 @@
-package thinkingInJava._14chapter;
+package thinkingInJava._14chapter.typeinfo;
 
 import thinkingInJava._14chapter.entity.Pet;
 
