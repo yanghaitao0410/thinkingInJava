@@ -8,7 +8,7 @@ import static com.yht.nowcode.sort.CompareUtil.printArray;
 /**
  * 堆排序由两个步骤组成：
  *  step1：建立大根堆的过程  O(N)
- *  step2：将大根堆堆顶元素与该堆最后元素交换，然后不包含现在最后元素，重新调整为大根堆的过程 O(logn)
+ *  step2：依次将大根堆堆顶元素与该堆有效区域的最后元素交换，然后堆的有效区域减一，重新调整为大根堆的过程 O(logn)
  *
  *  sp1:大根堆为完全二叉树（脑补），根在其所在子树中“值最大”，
  *  具体实现存放在数组中
@@ -45,9 +45,12 @@ public class HeapSort {
 
     /**
      * 将现在堆顶元素移动到合适位置，变为大根堆
-     * @param arr
-     * @param index
-     * @param size
+     *     堆顶元素与左右子节点中较大的进行比较，得出者三个节点中最大的，将大值变为根节点，
+     *     然后循环比较交换后的节点
+     *
+     * @param arr 数组
+     * @param index 要调整元素的索引
+     * @param size 大根堆有效区域的大小
      */
     private void heapify(int[] arr, int index, int size) {
         //左子节点位置
@@ -75,9 +78,9 @@ public class HeapSort {
     }
 
     /**
-     * 将当前数组调成大根堆形式
-     * @param arr
-     * @param index
+     * 将数组中指定元素的位置调整为大根堆形式
+     * @param arr 数组
+     * @param index 要调整的元素下标
      */
     public void heapInsert(int[] arr, int index) {
         while(arr[index] > arr[(index - 1) / 2]) { //若当前节点比父节点大
