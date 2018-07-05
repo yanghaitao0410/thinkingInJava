@@ -1,0 +1,10 @@
+
+\.idea/
+
+target/
+
+soda_template\.xls
+
+*.iml
+
+*.xls

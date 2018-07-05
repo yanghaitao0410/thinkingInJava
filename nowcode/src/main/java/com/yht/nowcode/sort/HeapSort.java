@@ -83,7 +83,7 @@ public class HeapSort {
      * @param index 要调整的元素下标
      */
     public void heapInsert(int[] arr, int index) {
-        while(arr[index] > arr[(index - 1) / 2]) { //若当前节点比父节点大
+        while((index - 1) / 2 >= 0 && arr[index] > arr[(index - 1) / 2]) { //存在父节点并且当前节点比父节点大
             CompareUtil.swop(arr, index, (index - 1) / 2); //将当前节点与父节点交换
             index = (index - 1) / 2; //更新当前节点的位置，继续看当前位置和父节点的大小
         }
