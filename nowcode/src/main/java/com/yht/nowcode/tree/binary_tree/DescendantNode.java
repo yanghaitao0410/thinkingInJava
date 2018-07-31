@@ -1,4 +1,4 @@
-package com.yht.nowcode.binary_tree;
+package com.yht.nowcode.tree.binary_tree;
 
 /**
  * 在二叉树中找到一个节点的后继节点

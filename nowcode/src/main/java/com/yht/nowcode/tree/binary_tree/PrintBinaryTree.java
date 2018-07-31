@@ -1,4 +1,4 @@
-package com.yht.nowcode.binary_tree;
+package com.yht.nowcode.tree.binary_tree;
 
 /**
  * 直观打印二叉树结构

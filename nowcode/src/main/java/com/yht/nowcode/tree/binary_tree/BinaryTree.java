@@ -1,6 +1,4 @@
-package com.yht.nowcode.binary_tree;
-
-import sun.reflect.generics.tree.Tree;
+package com.yht.nowcode.tree.binary_tree;
 
 import java.util.Stack;
 
