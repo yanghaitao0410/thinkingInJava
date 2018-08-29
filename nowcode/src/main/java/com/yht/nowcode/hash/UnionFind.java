@@ -27,15 +27,15 @@ public class UnionFind {
         }
     }
 
-    private static class CheckSet{
+    public static class CheckSet{
         /**
          * 使用map的对应关系实现向上指的过程
-         * fatherMap: key 表示当前节点  value 表示当前节点的父节点
+         * fatherMap: key 表示当前节点  nodeNumber 表示当前节点的父节点
          */
         private HashMap<Node, Node> fatherMap;
         /**
          * sizeMap 表示集合个数  里面存储的key若不是代表点，该条记录无效
-         * key 表示某集合的代表点  value 表示该集合的个数
+         * key 表示某集合的代表点  nodeNumber 表示该集合的个数
          */
         private HashMap<Node, Integer> sizeMap;
 
@@ -55,7 +55,7 @@ public class UnionFind {
          *  即：每一个节点的父节点为自己本身，集合的大小为1
          * @param dataList
          */
-        private void makeSets(List<Node> dataList) {
+        public void makeSets(List<Node> dataList) {
             fatherMap.clear();
             sizeMap.clear();
             for(Node data : dataList) {
@@ -70,7 +70,7 @@ public class UnionFind {
          * @param node
          * @return 代表点
          */
-        private Node findHead(Node node) {
+        public Node findHead(Node node) {
             Node father = fatherMap.get(node);
             if(father != node) {
                 father = findHead(father);

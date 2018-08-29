@@ -24,12 +24,12 @@ public class TestCopyListWithRandom {
         RandomNode newNode = CopyListWithRandom.copyRandomList1(head);
         RandomNode curNode = newNode;
         while(curNode != null) {
-            System.out.print("curNode.value : " + curNode.value + " ");
+            System.out.print("curNode.nodeNumber : " + curNode.value + " ");
 
             System.out.print(curNode.next != null ?
-                    "curNode.next.value : " + curNode.next.value + " " : "curNode.next.value : null ");
+                    "curNode.next.nodeNumber : " + curNode.next.value + " " : "curNode.next.nodeNumber : null ");
             System.out.print(curNode.random != null ?
-                    "curNode.random.value : " + curNode.random.value + " " : "curNode.random.value : null ");
+                    "curNode.random.nodeNumber : " + curNode.random.value + " " : "curNode.random.nodeNumber : null ");
 
             curNode = curNode.next;
             System.out.println();
@@ -37,9 +37,9 @@ public class TestCopyListWithRandom {
 
         /*
         输出结果：
-            curNode.value : 1 curNode.next.value : 2 curNode.random.value : 3
-            curNode.value : 2 curNode.next.value : 3 curNode.random.value : 1
-            curNode.value : 3 curNode.next.value : null curNode.random.value : null
+            curNode.nodeNumber : 1 curNode.next.nodeNumber : 2 curNode.random.nodeNumber : 3
+            curNode.nodeNumber : 2 curNode.next.nodeNumber : 3 curNode.random.nodeNumber : 1
+            curNode.nodeNumber : 3 curNode.next.nodeNumber : null curNode.random.nodeNumber : null
          */
 
     }
@@ -50,12 +50,12 @@ public class TestCopyListWithRandom {
         RandomNode newNode = CopyListWithRandom.copyRandomList2(head);
         RandomNode curNode = newNode;
         while(curNode != null) {
-            System.out.print("curNode.value : " + curNode.value + " ");
+            System.out.print("curNode.nodeNumber : " + curNode.value + " ");
 
             System.out.print(curNode.next != null ?
-                    "curNode.next.value : " + curNode.next.value + " " : "curNode.next.value : null ");
+                    "curNode.next.nodeNumber : " + curNode.next.value + " " : "curNode.next.nodeNumber : null ");
             System.out.print(curNode.random != null ?
-                    "curNode.random.value : " + curNode.random.value + " " : "curNode.random.value : null ");
+                    "curNode.random.nodeNumber : " + curNode.random.value + " " : "curNode.random.nodeNumber : null ");
 
             curNode = curNode.next;
             System.out.println();
@@ -63,9 +63,9 @@ public class TestCopyListWithRandom {
 
         /*
         输出结果：
-            curNode.value : 1 curNode.next.value : 2 curNode.random.value : 3
-            curNode.value : 2 curNode.next.value : 3 curNode.random.value : 1
-            curNode.value : 3 curNode.next.value : null curNode.random.value : null
+            curNode.nodeNumber : 1 curNode.next.nodeNumber : 2 curNode.random.nodeNumber : 3
+            curNode.nodeNumber : 2 curNode.next.nodeNumber : 3 curNode.random.nodeNumber : 1
+            curNode.nodeNumber : 3 curNode.next.nodeNumber : null curNode.random.nodeNumber : null
          */
 
     }
