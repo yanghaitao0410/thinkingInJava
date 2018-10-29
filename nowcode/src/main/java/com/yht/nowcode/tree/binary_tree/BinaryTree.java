@@ -1,5 +1,8 @@
 package com.yht.nowcode.tree.binary_tree;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class BinaryTree {
@@ -97,6 +100,7 @@ public class BinaryTree {
                 head = head.right;
             }
         }
+        System.out.println();
     }
 
     /**
@@ -150,6 +154,31 @@ public class BinaryTree {
             System.out.printf("%d ", help.pop().val);
         }
     }
+
+    /**
+     * 二叉树按层级遍历
+     * 准备一个队列，头节点如队列，然后出队列打印，然后头节点的左节点右节点依次入队列
+     * @param head
+     */
+    public static void layerTraversing(TreeNode head) {
+        if(head == null) {
+            throw new RuntimeException("TreeNode null!!");
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(head);
+        while(!queue.isEmpty()) {
+            head = queue.poll();
+            System.out.printf("%d ", head.val);
+            if(head.left != null) {
+                queue.add(head.left);
+            }
+            if(head.right != null) {
+                queue.add(head.right);
+            }
+        }
+    }
+
 
 
 }

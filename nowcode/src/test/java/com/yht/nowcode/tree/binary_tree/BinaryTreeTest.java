@@ -59,4 +59,11 @@ public class BinaryTreeTest {
         BinaryTree.posTraverseRecursion(head);
     }
 
+    @Test
+    public void layerTraversingTest() {
+        BinaryTree.layerTraversing(head);
+    }
+
+
+
 }

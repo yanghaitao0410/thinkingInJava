@@ -26,9 +26,11 @@ public class TrieTree {
         int index = 0;
         for(int i = 0; i < charArr.length; i++) {
             index = charArr[i] - 'a';
+            //树中没有当前节点，创建一个新节点
             if(node.nextNodes[index] == null) {
                 node.nextNodes[index] = new TrieTreeNode();
             }
+            //从前缀树中取出相应的节点
             node = node.nextNodes[index];
             node.pass++; //匹配上的节点的pass++
         }
