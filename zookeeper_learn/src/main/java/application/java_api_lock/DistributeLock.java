@@ -1,4 +1,4 @@
-package lock.java_api_lock;
+package application.java_api_lock;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 排他锁实现
  * @author yht
  * @create 2018/11/28
  */

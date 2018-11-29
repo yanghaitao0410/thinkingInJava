@@ -1,4 +1,4 @@
-package master_selector_zkclient;
+package application.master_selector.zkclient;
 
 import java.io.Serializable;
 import java.util.Objects;

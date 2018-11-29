@@ -1,4 +1,4 @@
-package lock.java_api_lock;
+package application.java_api_lock;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;

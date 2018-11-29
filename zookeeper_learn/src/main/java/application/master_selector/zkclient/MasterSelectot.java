@@ -1,4 +1,4 @@
-package master_selector_zkclient;
+package application.master_selector.zkclient;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;

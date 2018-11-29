@@ -1,4 +1,4 @@
-package curator;
+package base.curator;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

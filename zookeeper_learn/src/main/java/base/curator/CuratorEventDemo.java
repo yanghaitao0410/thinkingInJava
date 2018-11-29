@@ -1,8 +1,7 @@
-package curator;
+package base.curator;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.zookeeper.CreateMode;
 import org.junit.jupiter.api.Test;
@@ -29,14 +28,14 @@ public class CuratorEventDemo {
     public void nodeCacheTest() throws Exception {
         CuratorFramework curatorFramework = CuratorClientUtil.getInstance();
         //第三个参数为缓存数据是否做压缩处理
-        NodeCache cache = new NodeCache(curatorFramework, "/curator", false);
+        NodeCache cache = new NodeCache(curatorFramework, "/base/curator", false);
         //true增加初始操作
         cache.start(true);
 
         cache.getListenable().addListener(() -> System.out.println("节点数据发生变化，变化后的结果："
                 + new String(cache.getCurrentData().getData())));
 
-        curatorFramework.setData().forPath("/curator", "菲菲".getBytes());
+        curatorFramework.setData().forPath("/base/curator", "菲菲".getBytes());
         System.in.read();
     }
 

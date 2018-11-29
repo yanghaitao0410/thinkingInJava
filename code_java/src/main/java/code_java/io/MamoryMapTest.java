@@ -19,7 +19,7 @@ public class MamoryMapTest {
         System.out.println("Input Stream:");
         long start = System.currentTimeMillis();
         //获取文件路径
-        Path fileName = Paths.get("E:", "study", "java_api", "constant-values.html");
+        Path fileName = Paths.get("E:", "study", "base.java_api", "constant-values.html");
         long crcValue = checkSumInputStream(fileName);
         long end = System.currentTimeMillis();
         System.out.println(Long.toHexString(crcValue));

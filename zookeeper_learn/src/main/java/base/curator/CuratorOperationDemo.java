@@ -1,4 +1,4 @@
-package curator;
+package base.curator;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.BackgroundCallback;
@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * curator 节点操作
+ * base.curator 节点操作
  * @author yht
  * @create 2018/11/28
  */
@@ -32,7 +32,7 @@ public class CuratorOperationDemo {
     public void testCreateNode() {
         try {
             curatorFramework.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT)
-                    .forPath("/curator/curator1/curator1_1", "1234".getBytes());
+                    .forPath("/base/curator/curator1/curator1_1", "1234".getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +53,7 @@ public class CuratorOperationDemo {
         Stat stat = new Stat();
         try {
             //获取值 storingStatIn（stat）将 节点的信息返回
-            byte[] bytes = curatorFramework.getData().storingStatIn(stat).forPath("/curator/curator1/curator1_1");
+            byte[] bytes = curatorFramework.getData().storingStatIn(stat).forPath("/base/curator/curator1/curator1_1");
             System.out.println(new String(bytes) + "--> stat" + stat);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class CuratorOperationDemo {
     @Test
     public void updateNode() {
         try {
-            Stat stat = curatorFramework.setData().forPath("/curator", "123".getBytes());
+            Stat stat = curatorFramework.setData().forPath("/base/curator", "123".getBytes());
             System.out.println(stat);
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +105,7 @@ public class CuratorOperationDemo {
         Collection<CuratorTransactionResult> results =
                 curatorFramework.inTransaction()
                         .create().forPath("/trans", "111".getBytes()).and()
-                        .setData().forPath("/curator", "111".getBytes()).and()
+                        .setData().forPath("/base/curator", "111".getBytes()).and()
                         .commit();
 
         for(CuratorTransactionResult result :results) {

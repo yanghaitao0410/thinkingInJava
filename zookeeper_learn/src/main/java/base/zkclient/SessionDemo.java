@@ -1,4 +1,4 @@
-package zkclient;
+package base.zkclient;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package curator;
+package base.curator;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -33,7 +33,7 @@ public class CuratorCreateSessionDemo {
                 .connectString(CONNECTED_STRING)
                 .sessionTimeoutMs(5000)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3))
-                .namespace("/curator")  //表示后续通过该连接创建的节点都是在这个根节点下
+                .namespace("/base/curator")  //表示后续通过该连接创建的节点都是在这个根节点下
                 .build();
         curatorFramework1.start();
 
