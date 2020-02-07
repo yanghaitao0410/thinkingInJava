@@ -1,6 +1,5 @@
 package com.yht.nowcode.tree.binary_tree;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -91,10 +90,10 @@ public class BinaryTree {
         }
         Stack<TreeNode> stack = new Stack<>();
         while (!stack.isEmpty() || head!= null) {
-            if(head != null) {
+            if(head != null) { //每一个节点都当作一颗树来看待，先压入当前节点，然后往当前节点的左节点移动，最后栈顶元素就是应该先打印的节点
                 stack.push(head);
                 head = head.left;
-            } else {
+            } else { //打印栈顶元素（当前节点当作一棵树），然后向当前节点的右子树移动
                 head = stack.pop();
                 System.out.printf("%d ", head.val);
                 head = head.right;

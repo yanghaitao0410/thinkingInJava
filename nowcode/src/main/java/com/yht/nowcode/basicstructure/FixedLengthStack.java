@@ -12,6 +12,9 @@ public class FixedLengthStack {
     }
 
     public int peek() {
+        if(isEmpty()) {
+            throw new RuntimeException("Stack is Empty");
+        }
         return array[index - 1];
     }
 
