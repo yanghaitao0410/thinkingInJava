@@ -24,16 +24,18 @@ public class Kmp {
         }
         int textIndex = 0;
         int keyIndex = 0;
-        Integer[] subStringArr = getSubStringArr(keyWord);
+        Integer[] subStringArr = getSubStringArr2(keyWord);
         while (textIndex < text.length() && keyIndex < keyWord.length()) {
             if(text.charAt(textIndex) == keyWord.charAt(keyIndex)) {
                 textIndex++;
                 keyIndex++;
-            } else if(subStringArr[keyIndex] != -1){ //keyIndex 不在keyWork第一个位置
+            } else if(subStringArr[keyIndex] == -1){
+                //keyIndex 是第一个位置，已经不能往前跳了 没匹配上  textIndex移动到下一个位置 继续匹配
+                textIndex++;
+            } else{
+                //keyIndex 不在keyWork第一个位置
                 //前一个位置的最长前缀
                 keyIndex = subStringArr[keyIndex]; //跳到最长前缀的下一个位置
-            } else{
-                textIndex++;
             }
         }
         return keyIndex == keyWord.length() ? textIndex - keyIndex : -1;
@@ -101,7 +103,7 @@ public class Kmp {
 
     @Test
     public void testGetSubStringArr () {
-        Stream.of(getSubStringArr("ababcababtk")).forEach(x -> System.out.printf("%d ", x));
+        Stream.of(getSubStringArr2("ababcababtk")).forEach(x -> System.out.printf("%d ", x));
     }
 
     @Test
