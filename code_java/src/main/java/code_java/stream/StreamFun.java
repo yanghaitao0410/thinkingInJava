@@ -37,6 +37,8 @@ public class StreamFun {
         //产生一个将mapper应用于当前流中所有元素所产生的结果连接到一起的一个流
         Stream<String> flatResult = wordList.stream().flatMap(w -> letters(w));
 
+        flatResult.forEach(System.out::println);
+
         //产生一个包含100个随机数的流
         Stream<Double> randoms = Stream.generate(Math::random).limit(100);
 
