@@ -63,6 +63,8 @@ public class PartMin {
         if(arr[mid] < arr[mid - 1] && arr[mid] < arr[mid + 1]) {
             return mid;
         }
+        //运行到这里表示数组两边没有局部最小，边上是上升趋势
+        //若中间往结尾的趋势是下将的，后半段必有局部最小，否则前半段必有局部最小
         if(arr[mid] > arr[mid + 1]) {
            return getPartMinIndex(arr, mid, end);
         } else {
