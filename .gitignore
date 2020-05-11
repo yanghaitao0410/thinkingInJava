@@ -3,7 +3,7 @@
 
 target/
 
-soda_template\.xls
+thinking_learn/src/main/resources/soda_template.xls
 
 *.iml
 

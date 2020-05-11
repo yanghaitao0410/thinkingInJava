@@ -24,8 +24,8 @@ public class Excel {
         }
 
 
-        try(InputStream is = new FileInputStream("E:\\idea\\thinkingInJava\\object_collection_template1.xls")) {
-            try(OutputStream os = new FileOutputStream("E:\\idea\\thinkingInJava\\object_collection_output.xls")) {
+        try(InputStream is = new FileInputStream("E:\\idea\\thinkingInJava\\thinking_learn\\src\\main\\resources\\object_collection_template1.xls")) {
+            try(OutputStream os = new FileOutputStream("E:\\idea\\thinkingInJava\\thinking_learn\\src\\main\\resources\\object_collection_output.xls")) {
                 Context context = new Context();
                 context.putVar("persons", persons);
                 JxlsHelper.getInstance().processTemplate(is, os, context);
@@ -43,8 +43,8 @@ public class Excel {
         for(int i = 0; i < 5; i++) {
             persons.add(new Person("person" + i, 20 + i, "shenzhen,chegongmiao,eastATower3" + i));
         }
-        try(InputStream is = new FileInputStream("object_collection_template.xls")) {
-            try (OutputStream os = new FileOutputStream("object_collection_output.xls")) {
+        try(InputStream is = new FileInputStream("E:\\idea\\thinkingInJava\\thinking_learn\\src\\main\\resources\\object_collection_template.xls")) {
+            try (OutputStream os = new FileOutputStream("E:\\idea\\thinkingInJava\\thinking_learn\\src\\main\\resources\\object_collection_output.xls")) {
                 Context context = new Context();
                 context.putVar("employees", employees);
                 context.putVar("persons", persons);
