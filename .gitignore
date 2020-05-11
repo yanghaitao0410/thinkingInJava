@@ -8,3 +8,9 @@ soda_template\.xls
 *.iml
 
 *.xls
+/.settings/
+/.classpath
+/.project
+/code_java/.classpath
+/code_java/.project
+/code_java/.settings/
