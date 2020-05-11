@@ -1,9 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Stack;
 
 /**
@@ -41,29 +37,7 @@ public class ReverseStack {
         return result;
     }
 
-    @Before
-    public void startUp() {
-        stack = new Stack<>();
-        stack.push(1);
-        stack.push(2);
-        stack.push(3);
-    }
 
-    @Test
-    public void testGetButtomNum() {
-        Assert.assertEquals(1, getButtomNum(stack));
-        while (!stack.isEmpty()) {
-            System.out.println(stack.pop());
-        }
-    }
-
-    @Test
-    public void testReverseStack() {
-        reverseStack(stack);
-        while (!stack.isEmpty()) {
-            System.out.println(stack.pop());
-        }
-    }
 
 
 }

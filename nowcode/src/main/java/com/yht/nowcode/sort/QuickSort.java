@@ -1,19 +1,17 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import static com.yht.nowcode.sort.CompareUtil.*;
 
 public class QuickSort {
 
-    public void quickSort(int[] arr) {
+    public static void quickSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
         quickSort(arr, 0, arr.length - 1);
     }
 
-    public void quickSort(int[] arr, int L, int R) {
+    public static void quickSort(int[] arr, int L, int R) {
         if(L < R) {
             //从数组中随机选择一个数放到该数组的最后作为规定值，以达到期望时间复杂度
             swop(arr, L + (int) (Math.random() * (R - L + 1)), R);
@@ -23,7 +21,7 @@ public class QuickSort {
         }
     }
 
-    public int[] partition(int[] arr, int L, int R) {
+    public static int[] partition(int[] arr, int L, int R) {
         int less = L - 1; //小于区一开始在L左侧
         int more = R;  //大于区一开始包含
 
@@ -45,8 +43,7 @@ public class QuickSort {
         return new int[] { less + 1, more };
     }
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         int testTime = 500000;
         int maxSize = 100;
         int maxValue = 100;

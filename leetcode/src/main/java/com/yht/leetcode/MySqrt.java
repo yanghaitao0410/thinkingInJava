@@ -1,6 +1,6 @@
 package com.yht.leetcode;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  * 实现 int sqrt(int x) 函数。

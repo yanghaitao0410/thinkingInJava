@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import static com.yht.nowcode.sort.CompareUtil.*;
 import static com.yht.nowcode.sort.CompareUtil.printArray;
 
@@ -25,7 +23,7 @@ import static com.yht.nowcode.sort.CompareUtil.printArray;
  */
 public class HeapSort {
 
-    public void heapSort(int[] arr) {
+    public static void heapSort(int[] arr) {
         if(arr == null || arr.length < 2)
             return;
         //建立大根堆
@@ -52,7 +50,7 @@ public class HeapSort {
      * @param index 要调整元素的索引
      * @param size 大根堆有效区域的大小
      */
-    private void heapify(int[] arr, int index, int size) {
+    private static void heapify(int[] arr, int index, int size) {
         //左子节点位置
         int left = 2 * index + 1;
         //若左子节点在堆的范围之内，进入循环
@@ -82,15 +80,14 @@ public class HeapSort {
      * @param arr 数组
      * @param index 要调整的元素下标
      */
-    public void heapInsert(int[] arr, int index) {
+    public static void heapInsert(int[] arr, int index) {
         while((index - 1) / 2 >= 0 && arr[index] > arr[(index - 1) / 2]) { //存在父节点并且当前节点比父节点大
             CompareUtil.swop(arr, index, (index - 1) / 2); //将当前节点与父节点交换
             index = (index - 1) / 2; //更新当前节点的位置，继续看当前位置和父节点的大小
         }
     }
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         //boolean compare = compareMethod(randArr());
         //System.out.println(compare ? "success!!" : "Fucking fucked");
 

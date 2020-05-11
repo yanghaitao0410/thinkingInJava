@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import static com.yht.nowcode.sort.CompareUtil.*;
 
 /**
@@ -11,7 +9,7 @@ import static com.yht.nowcode.sort.CompareUtil.*;
  */
 public class InsertSort {
 
-    public void insertSort(int[] arr) {
+    public static void insertSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
@@ -24,8 +22,7 @@ public class InsertSort {
         }
     }
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         int testTime = 500000;
         int maxSize = 100;
         int maxValue = 100;

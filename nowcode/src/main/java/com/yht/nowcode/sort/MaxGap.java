@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 public class MaxGap {
 
     public int maxGap(int [] arr) {
@@ -59,16 +57,14 @@ public class MaxGap {
         return result;
     }
 
-    public int bucket(long num, long len, long min, long max) {
+    public static int bucket(long num, long len, long min, long max) {
         return (int) ((num - min) * len / (max - min));
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         MaxGap gap = new MaxGap();
         System.out.println(gap.bucket(79, 10, 0, 100));
         System.out.println(bucket(79L, 10L, 0L, 100L));
-
     }
 
 }

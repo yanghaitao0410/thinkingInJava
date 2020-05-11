@@ -1,6 +1,5 @@
 package com.yht.leetcode;
 
-import org.junit.jupiter.api.Test;
 
 /**
  * 给定两个二进制字符串，返回他们的和（用二进制表示）。
@@ -24,12 +23,11 @@ import org.junit.jupiter.api.Test;
  */
 public class AddBinary {
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         System.out.println(addBinary("11111", "11111"));
     }
 
-    public String addBinary(String a, String b) {
+    public static String addBinary(String a, String b) {
         boolean needCarry = false;
         int alen = a.length(), blen = b.length();
         int maxLen = Math.max(alen, blen), minLen = Math.min(alen, blen);

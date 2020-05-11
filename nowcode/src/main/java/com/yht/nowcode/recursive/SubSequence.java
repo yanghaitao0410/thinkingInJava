@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 /**
  * 打印字符串的所有子序列，包括空字符串
  * 若字符串为"abc"
@@ -54,8 +52,7 @@ public class SubSequence {
         }
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         printSubSequence("abc");
     }
 }

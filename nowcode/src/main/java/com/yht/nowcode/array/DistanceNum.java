@@ -1,7 +1,5 @@
 package com.yht.nowcode.array;
 
-import org.junit.Test;
-
 /**
  * 数组中重复数字
  * 在一个长度为n的数组里的所有数字都在0~n-1的范围内。数组中某些数字是重复的，但不知道有几个数组是重复的，
@@ -41,9 +39,5 @@ public class DistanceNum {
         arr[j] = tmp;
     }
 
-    @Test
-    public void test() {
-        int[] arr = {5, 4, 3, 3, 3, 3};
-        System.out.println(getDistanceNum(arr));
-    }
+
 }

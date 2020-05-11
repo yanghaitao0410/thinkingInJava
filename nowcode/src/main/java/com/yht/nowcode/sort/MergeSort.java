@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import static com.yht.nowcode.sort.CompareUtil.copyArray;
 import static com.yht.nowcode.sort.CompareUtil.generateRandomArray;
 import static com.yht.nowcode.sort.CompareUtil.isEqual;
@@ -13,14 +11,14 @@ import static com.yht.nowcode.sort.CompareUtil.isEqual;
  */
 public class MergeSort {
 
-    public void mergeSort(int[] arr) {
+    public static void mergeSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
         mergeSort(arr, 0, arr.length - 1);
     }
 
-    public void mergeSort(int[] arr, int L, int R) {
+    public static void mergeSort(int[] arr, int L, int R) {
         if(L == R) {
             return;
         }
@@ -31,7 +29,7 @@ public class MergeSort {
         merge(arr, L, mid, R);
     }
 
-    public void merge(int[] arr, int leftIndex, int mid, int rightIndex) {
+    public static void merge(int[] arr, int leftIndex, int mid, int rightIndex) {
         int[] help = new int[rightIndex - leftIndex + 1];
         int p1 = leftIndex;
         int p2 = mid + 1;
@@ -50,8 +48,7 @@ public class MergeSort {
         }
     }
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         int testTime = 500000;
         int maxSize = 100;
         int maxValue = 100;

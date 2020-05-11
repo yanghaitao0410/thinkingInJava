@@ -1,7 +1,5 @@
 package com.yht.nowcode.heap;
 
-import org.junit.Test;
-
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -43,7 +41,7 @@ public class MaxProfit {
      *  重复上面的步骤
      */
 
-    private PriorityQueue<Project> minProjects = new PriorityQueue<>(new Comparator<Project>() {
+    private static PriorityQueue<Project> minProjects = new PriorityQueue<>(new Comparator<Project>() {
         @Override
         public int compare(Project o1, Project o2) {
            if(o1.costs < o2.costs) {
@@ -55,7 +53,7 @@ public class MaxProfit {
         }
     });
 
-    private PriorityQueue<Project> maxProjects = new PriorityQueue<>(new Comparator<Project>() {
+    private static PriorityQueue<Project> maxProjects = new PriorityQueue<>(new Comparator<Project>() {
         @Override
         public int compare(Project o1, Project o2) {
             if(o1.profit > o2.profit) {
@@ -68,7 +66,7 @@ public class MaxProfit {
     });
 
 
-    public Integer maxProfit(Integer[] costs, Integer[] profit, int k, int m) {
+    public static Integer maxProfit(Integer[] costs, Integer[] profit, int k, int m) {
         int count = costs.length, index = 0;
         int maxProfit = 0;
         if(costs.length != profit.length || k < 0 || m < 0)
@@ -94,19 +92,11 @@ public class MaxProfit {
     }
 
 
-
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         Integer[] costs = {3, 5, 1, 8};
         Integer[] profit = {5, 6, 3, 9};
         System.out.println(maxProfit(costs, profit, 2, 3));
-
     }
-
-
-
-
-
 
 
 

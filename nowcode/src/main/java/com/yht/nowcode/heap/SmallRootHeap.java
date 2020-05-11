@@ -1,7 +1,6 @@
 package com.yht.nowcode.heap;
 
 import com.yht.nowcode.sort.CompareUtil;
-import org.junit.Test;
 
 /**
  * 小根堆List
@@ -100,8 +99,7 @@ public class SmallRootHeap {
     }
 
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         //boolean compare = compareMethod(randArr());
         //System.out.println(compare ? "success!!" : "Fucking fucked");
 

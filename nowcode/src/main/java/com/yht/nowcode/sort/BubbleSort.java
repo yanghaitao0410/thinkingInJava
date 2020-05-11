@@ -1,14 +1,12 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import java.util.Arrays;
 
 import static com.yht.nowcode.sort.CompareUtil.*;
 
 public class BubbleSort {
 
-    public void bubbleSort(int[] arr) {
+    public static void bubbleSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
@@ -27,7 +25,7 @@ public class BubbleSort {
        }
     }
 
-    private void swop(int[] arr, int i, int j) {
+    private static void swop(int[] arr, int i, int j) {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
@@ -79,10 +77,9 @@ public class BubbleSort {
         return copyArr;
     }
 
-    @Test
-    public void test1() {
-       //boolean compare = compareMethod(randArr());
-       //System.out.println(compare ? "success!!" : "Fucking fucked");
+    public static void main(String[] args) {
+        //boolean compare = compareMethod(randArr());
+        //System.out.println(compare ? "success!!" : "Fucking fucked");
 
         int testTime = 500000;
         int maxSize = 100;

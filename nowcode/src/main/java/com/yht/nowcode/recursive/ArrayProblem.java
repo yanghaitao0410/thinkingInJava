@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 public class ArrayProblem {
 
     /**
@@ -28,8 +26,7 @@ public class ArrayProblem {
         return existArrSumAim(arr, i + 1, sum, aim) || existArrSumAim(arr, i + 1, sum + arr[i], aim);
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         int[] arr = new int[]{1, 2, 3, 4, 5};
         System.out.println("exist:" + existArrSumAim(arr, 2));
     }

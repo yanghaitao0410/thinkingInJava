@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,8 +12,7 @@ public class MyComparator implements Comparator<Student> {
         return o2.getId() - o1.getId();
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         Student s1 = new Student(1, "student1", 50);
         Student s2 = new Student(2, "student2", 21);
         Student s3 = new Student(3, "student3", 20);

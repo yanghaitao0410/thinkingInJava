@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,12 +35,12 @@ import java.util.Map;
  *  第11年母牛数量=第10年全部数量+第8年全部数量- 10年前的牛
  */
 public class CattleAmount {
-    Map<Integer, Long> amountYearMap;
+    static Map<Integer, Long> amountYearMap;
     public CattleAmount(){
         amountYearMap = new HashMap<>();
     }
 
-    public long getCattleAmount(int N) {
+    public static long getCattleAmount(int N) {
         if(N < 0) {
             return 0;
         }
@@ -52,7 +50,7 @@ public class CattleAmount {
         return getAmount(N - 1) + getAmount(N - 3);
     }
 
-    private long getAmount(int year) {
+    private static long getAmount(int year) {
         Long amount = amountYearMap.get(year);
         if(amount == null) {
             amount = getCattleAmount(year);
@@ -61,8 +59,7 @@ public class CattleAmount {
         return amount;
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         Long start = System.currentTimeMillis();
         System.out.printf("Cattle Amount: %d", getCattleAmount(6));
         System.out.printf("计算花费%s毫秒", System.currentTimeMillis() - start);

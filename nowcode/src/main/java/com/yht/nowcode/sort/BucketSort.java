@@ -1,7 +1,5 @@
 package com.yht.nowcode.sort;
 
-import org.junit.Test;
-
 import static com.yht.nowcode.sort.CompareUtil.copyArray;
 import static com.yht.nowcode.sort.CompareUtil.isEqual;
 import static com.yht.nowcode.sort.CompareUtil.printArray;
@@ -15,7 +13,7 @@ public class BucketSort {
      * 0~200范围的一堆无序数
      * @param arr
      */
-    public void bucketSort(int[] arr) {
+    public static void bucketSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
@@ -35,8 +33,7 @@ public class BucketSort {
         }
     }
 
-    @Test
-    public void test1() {
+    public static void main(String[] args) {
         //boolean compare = compareMethod(randArr());
         //System.out.println(compare ? "success!!" : "Fucking fucked");
 

@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 /**
  * 给你一个二维数组，二维数组中每个数都是正数，要求从左上角走到右下角，每一步只能向右或向下。
  * 沿途的数字要累加起来。返回最小的路径和。
@@ -55,8 +53,7 @@ public class MinSum {
         return minSumArr[i][j];
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         System.out.println(getMinSum(new int[][]{{3, 2, 1, 0}, {7, 5, 0, 1}, {3, 7, 6, 2}}));
     }
 }

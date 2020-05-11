@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 public class Factorial {
 
     /**
@@ -29,8 +27,7 @@ public class Factorial {
         return n * getFactorial2(n - 1);
     }
 
-    @Test
-    public void test1(){
+    public static void main(String[] args) {
         int n = 5;
         System.out.println(getFactorial1(n));
         System.out.println(getFactorial2(n));

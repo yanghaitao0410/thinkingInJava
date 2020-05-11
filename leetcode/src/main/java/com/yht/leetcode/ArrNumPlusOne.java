@@ -1,8 +1,5 @@
 package com.yht.leetcode;
 
-import org.junit.jupiter.api.Test;
-
-import javax.xml.bind.annotation.XmlAnyAttribute;
 import java.util.Arrays;
 
 /**
@@ -35,7 +32,7 @@ public class ArrNumPlusOne {
         new一个变量存储是否需要进位
         while循环数组 如果+1之前是9 那么需要进位
     */
-    public int[] plusOne(int[] digits) {
+    public static int[] plusOne(int[] digits) {
         int arrSize = digits.length;
         if(arrSize == 1 && digits[0] == 0) {
             digits[0] = 1;
@@ -61,8 +58,7 @@ public class ArrNumPlusOne {
         return digits;
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         int [] arr = {9,9,9};
         Arrays.stream(plusOne(arr)).forEach(System.out::println);
     }

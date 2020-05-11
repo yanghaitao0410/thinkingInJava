@@ -1,7 +1,5 @@
 package com.yht.nowcode.heap;
 
-import org.junit.Test;
-
 /**
  * 一块金条切成两半，需要花费和长度数值一样的铜板。比如长度为20的金条，不管切成长度多大的两半，都要花费20个铜板。
  * 一群人想整分整块金条，怎么分最省铜板？
@@ -26,7 +24,7 @@ import org.junit.Test;
  */
 public class CutGold {
 
-    public int cutGold(int[] goldArr){
+    public static int cutGold(int[] goldArr){
         if(goldArr == null || goldArr.length == 0)
             return 0;
         if(goldArr.length == 1)
@@ -49,8 +47,7 @@ public class CutGold {
         return result;
     }
 
-    @Test
-    public void testCutGold() {
+    public static void main(String[] args) {
         int[] golds = {10, 20, 30};
         System.out.println(cutGold(golds));
     }

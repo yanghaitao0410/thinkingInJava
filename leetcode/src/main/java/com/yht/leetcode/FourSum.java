@@ -1,7 +1,5 @@
 package com.yht.leetcode;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +31,7 @@ import java.util.stream.Stream;
  */
 public class FourSum {
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         System.out.println(fourSum(new int[]{1, 0, -1, 0, -2, 2}, 0));
     }
 
@@ -44,7 +41,7 @@ public class FourSum {
      * @param target
      * @return
      */
-    public List<List<Integer>> fourSum(int[] nums, int target) {
+    public static List<List<Integer>> fourSum(int[] nums, int target) {
         List<List<Integer>> result = new ArrayList<>();
         if(nums.length < 4) {
             return result;

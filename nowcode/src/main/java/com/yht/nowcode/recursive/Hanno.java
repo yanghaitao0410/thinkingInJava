@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 /**
  * 汉诺塔问题
  * 有 from  to  help 3个杆，
@@ -21,7 +19,7 @@ public class Hanno {
      * @param to 结束杆
      * @param help 辅助杆
      */
-    public void moveHanno(int N, String from, String to, String help) {
+    public static void moveHanno(int N, String from, String to, String help) {
         if(N == 1) {
             System.out.printf("move 1 from %s to %s\n", from, to);
         }else {
@@ -31,8 +29,7 @@ public class Hanno {
         }
     }
 
-    @Test
-    public void test(){
+    public static void main(String[] args) {
         moveHanno(10, "左", "右", "中");
     }
 }

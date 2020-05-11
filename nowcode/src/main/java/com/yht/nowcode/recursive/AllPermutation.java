@@ -1,7 +1,5 @@
 package com.yht.nowcode.recursive;
 
-import org.junit.Test;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,8 +49,7 @@ public class AllPermutation {
         return new String(chars);
     }
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         printAllPermutation("acc");
         System.out.println("===============");
         printAllPermutation("abc");

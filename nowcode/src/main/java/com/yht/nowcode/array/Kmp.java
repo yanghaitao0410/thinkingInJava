@@ -1,7 +1,5 @@
 package com.yht.nowcode.array;
 
-import org.junit.Test;
-
 import java.util.stream.Stream;
 
 /**
@@ -18,7 +16,7 @@ public class Kmp {
      * @param keyWord
      * @return
      */
-    public int getIndexOf(String text, String keyWord) {
+    public static int getIndexOf(String text, String keyWord) {
         if(text == null || text.length() < 1 || keyWord == null || keyWord.length() < 1){
             return -1;
         }
@@ -80,7 +78,7 @@ public class Kmp {
         return subStringArr;
     }
 
-    private Integer[] getSubStringArr2(String word) {
+    public static Integer[] getSubStringArr2(String word) {
         if(word.length() == 1) {
             return new Integer[]{-1};
         }
@@ -101,14 +99,5 @@ public class Kmp {
         return next;
     }
 
-    @Test
-    public void testGetSubStringArr () {
-        Stream.of(getSubStringArr2("ababcababtk")).forEach(x -> System.out.printf("%d ", x));
-    }
-
-    @Test
-    public void testKmp() {
-        System.out.println(getIndexOf("abeabcdd", "abc"));
-    }
 
 }
