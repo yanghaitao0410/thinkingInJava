@@ -20,7 +20,7 @@ public class OptionalTest {
                     .filter(s -> s.contains("da"))
                     .findFirst();
             //orElse(String string) | orElseGet(Supplier<? extends T> other) | orElseThrow (Exception)
-            // 返回当前Optional值，若为空，返回string | 产生调用other的结果 | 抛出异常
+            // 返回当前Optional值，若为空：返回string | 产生调用other的结果 | 抛出异常
             System.out.println(optionalValue.orElse("No word") + " contains da");
 
             //Optional.empty() 返回一个空Optional
