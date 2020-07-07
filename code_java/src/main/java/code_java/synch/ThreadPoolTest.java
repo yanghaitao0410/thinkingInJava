@@ -1,12 +1,14 @@
 package code_java.synch;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
 public class ThreadPoolTest {
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)){
+        try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter base directory(e.g. /usr/local/jdk5.0/src): ");
             String directory = scanner.nextLine();
             System.out.print("Enter keyword(e.g. volatile): ");
@@ -27,9 +29,24 @@ public class ThreadPoolTest {
             }
             pool.shutdown();
 
-            int largestPoolSize = ((ThreadPoolExecutor)pool).getLargestPoolSize();
+            int largestPoolSize = ((ThreadPoolExecutor) pool).getLargestPoolSize();
             System.out.println("largest pool size = " + largestPoolSize);
 
         }
+    }
+
+    static CountDownLatch latch = new CountDownLatch(1);
+
+    public void m1() {
+        System.out.println("m1:" + Thread.currentThread().getName());
+        latch.countDown();
+    }
+
+    @Test
+    public void test() throws InterruptedException {
+        ThreadPoolTest t = new ThreadPoolTest();
+        //Thread构造方法可以设置线程启动后运行的方法，不设置特定方法会运行默认run方法
+        new Thread(() -> t.m1(), "t1").start();
+        latch.await();
     }
 }

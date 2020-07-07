@@ -1,4 +1,4 @@
-package com.yht.nowcode.recursive;
+package com.yht.nowcode.stack_queue;
 
 import java.util.Stack;
 
@@ -7,8 +7,10 @@ import java.util.Stack;
  */
 public class ReverseStack {
 
-    Stack<Integer> stack = null;
-
+    /**
+     * 逆序栈
+     * @param stack
+     */
     public static void reverseStack(Stack<Integer> stack) {
         if (stack.isEmpty())
             return;

@@ -1,5 +1,7 @@
 package com.yht.nowcode.basicstructure;
 
+import com.yht.nowcode.stack_queue.GetMinStack;
+import com.yht.nowcode.stack_queue.GetMinStack2;
 import org.junit.Test;
 
 public class TestMinStack {

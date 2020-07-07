@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import java.util.Stack;
 
-import static com.yht.nowcode.recursive.ReverseStack.getButtomNum;
-import static com.yht.nowcode.recursive.ReverseStack.reverseStack;
+import static com.yht.nowcode.stack_queue.ReverseStack.getButtomNum;
+import static com.yht.nowcode.stack_queue.ReverseStack.reverseStack;
 
 /**
  * @author yht

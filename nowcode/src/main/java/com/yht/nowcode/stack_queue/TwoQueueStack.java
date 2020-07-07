@@ -1,4 +1,4 @@
-package com.yht.nowcode.basicstructure;
+package com.yht.nowcode.stack_queue;
 
 import java.util.LinkedList;
 import java.util.Queue;

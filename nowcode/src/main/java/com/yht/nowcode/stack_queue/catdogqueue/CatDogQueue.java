@@ -1,4 +1,4 @@
-package com.yht.nowcode.catdogqueue;
+package com.yht.nowcode.stack_queue.catdogqueue;
 
 import java.util.LinkedList;
 import java.util.Queue;
