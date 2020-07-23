@@ -10,19 +10,6 @@ import java.util.Map;
  **/
 public class BuildTree {
 
-    /**
-     * Definition for a binary tree node.
-     */
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
-
     //key为节点值，value为对应数组的下标
     Map<Integer, Integer> inMap = new HashMap<>();
 

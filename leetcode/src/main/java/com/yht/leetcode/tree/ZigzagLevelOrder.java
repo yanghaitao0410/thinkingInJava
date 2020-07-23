@@ -9,11 +9,11 @@ import java.util.*;
  * 例如：
  * 给定二叉树 [3,9,20,null,null,15,7],
  * <p>
- * 3
- * / \
- * 9  20
- * /  \
- * 15   7
+ *    3
+ *   / \
+ *  9  20
+ *    /  \
+ *   15   7
  * <p>
  * 返回锯齿形层次遍历如下：
  * [
@@ -25,17 +25,6 @@ import java.util.*;
  * @date 2020/6/30
  **/
 public class ZigzagLevelOrder {
-
-    //Definition for a binary tree node.
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
 
     /**
      * 广度优先遍历二叉树，通过一个标志位判断当前层是从左到右遍历还是从右到左遍历
