@@ -1,5 +1,7 @@
 package code_java.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * @Desc
  * @Author water
@@ -8,10 +10,48 @@ package code_java.model;
 public class Person {
     private String name;
     private int age;
+    @JSONField(name = "FName")
+    private String FName;
+    private String FAge;
 
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
+    }
+
+    public Person() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getFName() {
+        return FName;
+    }
+
+    public void setFName(String FName) {
+        this.FName = FName;
+    }
+
+    public String getFAge() {
+        return FAge;
+    }
+
+    public void setFAge(String FAge) {
+        this.FAge = FAge;
     }
 
     @Override

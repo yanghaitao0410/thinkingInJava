@@ -1,5 +1,6 @@
 package code_java;
 
+import code_java.model.Person;
 import com.alibaba.fastjson.JSONObject;
 
 import com.alibaba.fastjson.TypeReference;
@@ -17,5 +18,16 @@ public class JSONObjectLearnTest {
 
 
         Assert.assertEquals("0", jsonObject.getString("error_code"));
+
+
+    }
+
+    @Test
+    public void test2() {
+        Person person = new Person();
+        person.setFAge("20");
+        person.setFName("sdf");
+        System.out.println(JSONObject.toJSONString(person));
+
     }
 }
