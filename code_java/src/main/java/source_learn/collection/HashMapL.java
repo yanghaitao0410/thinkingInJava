@@ -3,10 +3,7 @@ package source_learn.collection;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Desc
@@ -242,7 +239,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     transient int modCount;
 
     /**
-     * 调整大小的下一个大小值(capacity * load factor)。
+     * 当前map允许存放的最大数量 超出该值就需要扩容 计算公式：(capacity * load factor)。
      * The javadoc description is true upon serialization.
      * 如果没有分配table[]，则该字段保存初始数组容量，或者表示DEFAULT_INITIAL_CAPACITY的值为0。
      */
@@ -274,6 +271,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             throw new IllegalArgumentException("Illegal load factor: " + loadFactor);
         }
         this.loadFactor = loadFactor;
+        //指定初始容量后，可以允许不扩容的最大容量就是传入initialCapacity当前值或是下一个2的幂次方
         this.threshold = tableSizeFor(initialCapacity);
     }
 
@@ -405,7 +403,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 } while ((e = e.next) != null);
             }
         }
-
+        //没有找到返回null
         return null;
     }
 
@@ -419,6 +417,124 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         return getNode(hash(key), key) != null;
     }
 
+    /**
+     * put一对key value到map ，若map中已经存在，会覆盖旧值
+     * @param key
+     * @param value
+     * @return 被覆盖的旧值，如果没有，则为null
+     */
+    @Override
+    public V put(K key, V value) {
+        return putVal(hash(key), key, value, false, true);
+    }
+
+    /**
+     * 实现了Map.put和相关方法
+     * @param hash key的hash值
+     * @param key key
+     * @param value 要设置的value
+     * @param onlyIfAbsent true : map中已经设置过这个可以，不覆盖原有值 （当前新值会设置失败） false : 覆盖旧值
+     * @param evict false : table处于创建阶段
+     * @return 被覆盖的旧值，如果没有，则为null
+     */
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
+        //临时变量指向map中table
+        Node<K, V>[] tab;
+        Node<K, V> p;
+        //tab的length
+        int n,
+                //
+                i;
+
+        //table为空，首次扩容
+        if ((tab = table) == null || (n = tab.length) == 0) {
+            n = (tab = resize()).length;
+        }
+
+        return null;
+    }
+
+    /**
+     * 初始化或翻倍table的size
+     *若table为null，按 threshold 字段的初始容量目标分配。
+     * 否则，由于我们使用的是2的幂次方，每个bin中的元素要么必须保持在相同的索引中，要么在新表中移动2的幂偏移量。
+     * todo
+     * @return
+     */
+    final Node<K,V>[] resize() {
+        Node<K, V>[] oldTab = table;
+        //旧table长度
+        int oldCap = (oldTab == null) ? 0 : oldTab.length;
+        //旧threshold
+        int oldThr = threshold;
+        int newCap, newThr = 0;
+
+        if (oldCap > 0) {
+            //非初始化，空间不足时扩容
+
+            //当前容量已经达到最大容量，直接返回当前table
+            if (oldCap >= MAXINMUM_CAPACIRY) {
+                threshold = Integer.MAX_VALUE;
+                return oldTab;
+            } else if ((newCap = oldCap << 1) < MAXINMUM_CAPACIRY && oldCap >= DEFAULT_INITIAL_CAPACITY) {
+                //table长度翻倍后在允许范围内，并且翻倍前的长度大于默认长度
+                //threshold翻倍
+                newThr = oldThr << 1;
+            }
+
+        } else if (oldThr > 0) {
+            //oldCap = 0 说明还没有分配空间 初始容量设为threshold
+            newCap = oldThr;
+        } else {
+            // oldCap、oldThr都为0  使用默认值初始化
+            newCap = DEFAULT_INITIAL_CAPACITY;
+            newThr = (int) (DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+        }
+
+        //newThr = 0 有2种情况导致, 非初始化才会出现
+        //1：newCap >= MAXINMUM_CAPACIRY
+        //2: oldCap < DEFAULT_INITIAL_CAPACITY
+        if (newThr == 0) {
+            //下次扩容前可以存储的数据量
+            float ft = (float) newCap * loadFactor;
+            //需要确保table容量和不需要扩容的容量都在允许范围内 否则直接设置一个最大值
+            newThr = (newCap < MAXINMUM_CAPACIRY && ft < (float)MAXINMUM_CAPACIRY ? (int)ft : Integer.MAX_VALUE);
+        }
+
+        //更新threshold
+        threshold = newThr;
+        //创建新table
+        HashMapL.Node<K,V>[] newTab = (HashMapL.Node<K,V>[])new HashMapL.Node[newCap];
+        //更新table
+        table = newTab;
+
+        //迁移旧table中数据到新table
+        if (oldTab != null) {
+            for (int j = 0; j < oldCap; ++j) {
+                //遍历到table中每个槽位
+                Node<K, V> e;
+                if ((e = oldTab[j]) != null) {
+                    //释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+                    oldTab[j] = null;
+                    if (e.next == null) {
+                        //链表中只有一个节点，直接映射到新table中 下标算法： e.hash & (newCap - 1)
+                        newTab[e.hash & (newCap - 1)] = e;
+                    } else if (e instanceof TreeNode){
+                        //结构是红黑树 todo
+                        ((HashMapL.TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                    } else {
+                        //链表中有多个节点
+
+                    }
+                }
+            }
+        }
+
+
+
+    }
+
+
     public static void main(String[] args) {
         System.out.println(tableSizeFor(65));
     }
@@ -428,5 +544,31 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     @Override
     public Set<Entry<K, V>> entrySet() {
         return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    static final class TreeNode<K, V> extends LinkedHashMapL.Entry<K, V> {
+
+        TreeNode(int hash, K key, V value, Node<K, V> next) {
+            super(hash, key, value, next);
+        }
     }
 }
