@@ -139,6 +139,17 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     }
 
     /**
+     * jdk1.7的源码，jdk1.8没有这个方法，但是实现原理一样的
+     *
+     * @param h
+     * @param length
+     * @return
+     */
+    static int indexFor(int h, int length) {
+        return h & (length - 1);
+    }
+
+    /**
      * 返回x的类，如果它的形式是“class X implements Comparable<X>”，否则为返回null
      *
      * @param x
@@ -233,7 +244,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     transient int size;
 
     /**
-     * 对该HashMap进行结构修改的次数结构修改是指更改HashMap中的映射次数或以其他方式修改其内部结构（例如，重新哈希）的修改。
+     * 记录HashMap内部结构发生变化的次数，主要用于迭代的快速失败。
+     * 强调一点，内部结构发生变化指的是结构发生变化，例如put新键值对，但是某个key对应的value值被覆盖不属于结构变化。
      * 此字段用于使HashMap的Collection-view上的迭代器快速失败。 （请参见ConcurrentModificationException）
      */
     transient int modCount;
@@ -292,6 +304,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * 通过另一个map集合创建当前map
+     *
      * @param m
      */
     public HashMapL(Map<? extends K, ? extends V> m) {
@@ -300,8 +313,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     }
 
     /**
-     *
-     * @param m 传入的map
+     * @param m     传入的map
      * @param evict 最初构造map时为false，否则为true（中继到afterNodeInsertion方法）
      */
     final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
@@ -313,11 +325,11 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 //初始化阶段
 
                 //通过负载因子 得出不会扩容的map容量
-                float ft = ((float) s / loadFactor ) + 1.0F;
+                float ft = ((float) s / loadFactor) + 1.0F;
                 int t = ((ft < (float) MAXINMUM_CAPACIRY) ? (int) ft : MAXINMUM_CAPACIRY);
 
                 //通过 tableSizeFor方法得到2的幂次方容量
-                if(t > threshold) {
+                if (t > threshold) {
                     threshold = tableSizeFor(t);
                 }
             } else if (s > threshold) {
@@ -349,6 +361,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
      * 更正式地说，如果这个映射包含一个从键k到值v的映射(key==null ?k==null: key.equals(k))，则该方法返回v;否则返回null。
      * (最多只能有一个这样的映射。)
      * 返回值为null并不一定表示map不包含key的映射;也可能显式地将key映射为null。可以使用containsKey操作来区分这两种情况。
+     *
      * @param key
      * @return
      */
@@ -360,8 +373,9 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * 通过key的hash 、key 获取node
+     *
      * @param hash hash for key
-     * @param key the key
+     * @param key  the key
      * @return the node, or null if none
      */
     final Node<K, V> getNode(int hash, Object key) {
@@ -370,7 +384,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         //key对应的table中的位置的链表第一个节点
         Node<K, V> first,
-        //first节点的next
+                //first节点的next
                 e;
         //当前map中元素个数
         int n;
@@ -390,7 +404,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
                 //红黑树方式存储的节点
                 if (first instanceof TreeNode) {
-                    return ((TreeNode<K, V> first).getTreeNode(hash, key));
+                    return ((TreeNode < K,V > first).getTreeNode(hash, key));
                 }
 
                 //循环遍历链表方式存储的节点
@@ -409,6 +423,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * 如果map包含key的映射，则返回true。
+     *
      * @param key
      * @return
      */
@@ -419,6 +434,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * put一对key value到map ，若map中已经存在，会覆盖旧值
+     *
      * @param key
      * @param value
      * @return 被覆盖的旧值，如果没有，则为null
@@ -430,16 +446,18 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * 实现了Map.put和相关方法
-     * @param hash key的hash值
-     * @param key key
-     * @param value 要设置的value
+     *
+     * @param hash         key的hash值
+     * @param key          key
+     * @param value        要设置的value
      * @param onlyIfAbsent true : map中已经设置过这个可以，不覆盖原有值 （当前新值会设置失败） false : 覆盖旧值
-     * @param evict false : table处于创建阶段
+     * @param evict        false : table处于创建阶段
      * @return 被覆盖的旧值，如果没有，则为null
      */
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
         //临时变量指向map中table
         Node<K, V>[] tab;
+        //table中要设置的槽位节点
         Node<K, V> p;
         //tab的length
         int n,
@@ -448,20 +466,78 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         //table为空，首次扩容
         if ((tab = table) == null || (n = tab.length) == 0) {
+            //得到扩容之后的长度
             n = (tab = resize()).length;
         }
+        //通过(n - 1) & hash计算出要put的键值对在table中的位置
+        // 为空说明该位置没有别的元素
+        if ((p = tab[i = (n - 1) & hash]) == null) {
+            tab[i] = newNode(hash, key, value, null);
+        } else {
+            //要替换的旧节点
+            Node<K,V> e;
+            //传入key临时变量
+            K k;
 
+            //链表中第一个节点就是要更新的值
+            if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k)))) {
+                e = p;
+            } else if (p instanceof TreeNode) {
+                //红黑树插入节点
+                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+            } else {
+                //在链表中新增或替换节点
+                for (int binCount = 0; ; ++binCount) {
+                    //遍历到链表结尾，说明map中没设置过当前key，新增节点
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        //binCount从0开始 链表节点达到8个，需要转换为红黑树
+                        if (binCount >= TREEIFY_THRESHOLD - 1) {
+                            treeifyBin(tab, hash);
+                        }
+                        break;
+                    }
+                    //定位到具体节点 跳出循环
+                    if (e.hash == hash &&
+                            ((k = e.key) == key || (key != null && key.equals(k)))) {
+                        break;
+                    }
+                    //p向下移动一位 因为e = p.next
+                    p = e;
+                }
+            }
+            //当节点不为空的时候
+            if (e != null) {
+                //替换节点中value值
+                V oldValue = e.value;
+                //onlyIfAbsent为false才设置新值
+                if (!onlyIfAbsent || oldValue == null) {
+                    e.value = value;
+                }
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        //初始化或某一个没有节点的槽位新增节点时 modCount计数一次
+        ++modCount;
+        //只要有新增节点的操作 程序都会运行到这里 size自增
+        //如果自增后元素数量大于threshold 扩容
+        if (++size > threshold)
+            resize();
+        afterNodeInsertion(evict);
+        //新增节点返回null 因为没有旧值
         return null;
     }
 
     /**
      * 初始化或翻倍table的size
-     *若table为null，按 threshold 字段的初始容量目标分配。
+     * 若table为null，按 threshold 字段的初始容量目标分配。
      * 否则，由于我们使用的是2的幂次方，每个bin中的元素要么必须保持在相同的索引中，要么在新表中移动2的幂偏移量。
      * todo
+     *
      * @return
      */
-    final Node<K,V>[] resize() {
+    final Node<K, V>[] resize() {
         Node<K, V>[] oldTab = table;
         //旧table长度
         int oldCap = (oldTab == null) ? 0 : oldTab.length;
@@ -498,13 +574,13 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             //下次扩容前可以存储的数据量
             float ft = (float) newCap * loadFactor;
             //需要确保table容量和不需要扩容的容量都在允许范围内 否则直接设置一个最大值
-            newThr = (newCap < MAXINMUM_CAPACIRY && ft < (float)MAXINMUM_CAPACIRY ? (int)ft : Integer.MAX_VALUE);
+            newThr = (newCap < MAXINMUM_CAPACIRY && ft < (float) MAXINMUM_CAPACIRY ? (int) ft : Integer.MAX_VALUE);
         }
 
         //更新threshold
         threshold = newThr;
         //创建新table
-        HashMapL.Node<K,V>[] newTab = (HashMapL.Node<K,V>[])new HashMapL.Node[newCap];
+        HashMapL.Node<K, V>[] newTab = (HashMapL.Node<K, V>[]) new HashMapL.Node[newCap];
         //更新table
         table = newTab;
 
@@ -514,23 +590,124 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 //遍历到table中每个槽位
                 Node<K, V> e;
                 if ((e = oldTab[j]) != null) {
-                    //释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+                    //释放旧Node数组的对象引用（for循环后，旧的Node数组不再引用任何对象）
                     oldTab[j] = null;
                     if (e.next == null) {
                         //链表中只有一个节点，直接映射到新table中 下标算法： e.hash & (newCap - 1)
                         newTab[e.hash & (newCap - 1)] = e;
-                    } else if (e instanceof TreeNode){
+                    } else if (e instanceof TreeNode) {
                         //结构是红黑树 todo
-                        ((HashMapL.TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                        ((HashMapL.TreeNode<K, V>) e).split(this, newTab, j, oldCap);
                     } else {
-                        //链表中有多个节点
+                        /*
+                        链表中有多个节点情况:
+                        观测可以发现，我们使用的是2次幂的扩展(指长度扩为原来2倍)，
+                        所以，元素的位置要么是在原位置，要么是在原位置再移动2次幂的位置
 
+                        因此，我们在扩充HashMap的时候，不需要像JDK1.7的实现那样重新计算hash，
+                        只需要看看原来的hash值新增的那个bit是1还是0就好了，
+                        是0的话索引没变，是1的话索引变成“原索引+oldCap”
+                        这个设计确实非常的巧妙，既省去了重新计算hash值的时间，
+                        而且同时，由于新增的1bit是0还是1可以认为是随机的，因此resize的过程，
+                        均匀的把之前的冲突的节点分散到新的bucket了
+                         */
+//                       链表优化重hash的代码块
+                        Node<K, V> loHead = null, loTail = null;
+                        Node<K, V> hiHead = null, hiTail = null;
+                        Node<K, V> next;
+                        do {
+                            next = e.next;
+                            // 原索引
+                            if ((e.hash & oldCap) == 0) {
+                                //第一次尽量 loTail为null，设置头节点
+                                //节点的连接都是靠loTail移动
+                                //这样做是为了让链表中元素相对顺序保证不变
+                                if (loTail == null) {
+                                    loHead = e;
+                                } else {
+                                    loTail.next = e;
+                                }
+                                loTail = e;
+                            } else { // 原索引+oldCap
+                                if (hiTail == null) {
+                                    hiHead = e;
+                                } else {
+                                    hiTail.next = e;
+                                }
+                                hiTail = e;
+                            }
+                        } while ((e = next) != null);
+
+                        // 原索引放到bucket里
+                        if (loTail != null) {
+                            loTail.next = null;
+                            newTab[j] = loHead;
+                        }
+
+                        // 原索引+oldCap放到bucket里
+                        if (hiTail != null) {
+                            hiTail.next = null;
+                            newTab[j + oldCap] = hiHead;
+                        }
                     }
                 }
             }
         }
+        return newTab;
+    }
 
+    /**
+     * jdk1.7扩容算法
+     * 1.7使用的是Entry类 为了在这里不报错 改成了使用Node类
+     *
+     * @param newCapacity
+     */
+    void resize(int newCapacity) {   //传入新的容量
+        Node[] oldTable = table;    //引用扩容前的Entry数组
+        int oldCapacity = oldTable.length;
+        if (oldCapacity == MAXINMUM_CAPACIRY) {  //扩容前的数组大小如果已经达到最大(2^30)了
+            threshold = Integer.MAX_VALUE; //修改阈值为int的最大值(2^31-1)，这样以后就不会扩容了
+            return;
+        }
 
+        Node[] newTable = new Node[newCapacity];  //初始化一个新的Entry数组
+        transfer(newTable);                         //！！将数据转移到新的Entry数组里
+        table = newTable;                          //HashMap的table属性引用新的Entry数组
+        threshold = (int) (newCapacity * loadFactor);//修改阈值
+    }
+
+    /**
+     * JDK1.7中rehash的时候，旧链表迁移新链表的时候，如果在新表的数组索引位置相同，则链表元素会倒置
+     * 因为头插法
+     *
+     * @param newTable
+     */
+    void transfer(Node[] newTable) {
+        Node[] src = table;                   //src引用了旧的Entry数组
+        int newCapacity = newTable.length;
+        for (int j = 0; j < src.length; j++) { //遍历旧的Entry数组
+            Node<K, V> e = src[j];             //取得旧Entry数组的每个元素
+            if (e != null) {
+                src[j] = null;//释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+                do {
+                    Node<K, V> next = e.next;
+                    int i = indexFor(e.hash, newCapacity); //！！重新计算每个元素在数组中的位置
+
+                    //使用头插法插入节点到newTable上，同一位置上新元素总会被放在链表的头部位置
+                    e.next = newTable[i]; //标记[1]
+                    newTable[i] = e;      //将元素放在数组上
+                    e = next;             //访问下一个Entry链上的元素
+                } while (e != null);
+            }
+        }
+    }
+
+    /**
+     * 链表转换为红黑树 todo
+     * @param tab
+     * @param hash
+     */
+    final void treeifyBin(Node<K,V>[] tab, int hash) {
 
     }
 
@@ -540,29 +717,22 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     }
 
 
-
     @Override
     public Set<Entry<K, V>> entrySet() {
         return null;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * 创建一个常规(非树)节点
+     * @param hash
+     * @param key
+     * @param value
+     * @param next 当前节点的next节点
+     * @return
+     */
+    Node<K, V> newNode(int hash, K key, V value, Node<K, V> next) {
+        return new Node<>(hash, key, value, next);
+    }
 
 
     static final class TreeNode<K, V> extends LinkedHashMapL.Entry<K, V> {
