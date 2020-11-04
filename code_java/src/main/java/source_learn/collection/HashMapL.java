@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @Desc
@@ -475,7 +476,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             tab[i] = newNode(hash, key, value, null);
         } else {
             //要替换的旧节点
-            Node<K,V> e;
+            Node<K, V> e;
             //传入key临时变量
             K k;
 
@@ -484,7 +485,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 e = p;
             } else if (p instanceof TreeNode) {
                 //红黑树插入节点
-                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+                e = ((TreeNode<K, V>) p).putTreeVal(this, tab, hash, key, value);
             } else {
                 //在链表中新增或替换节点
                 for (int binCount = 0; ; ++binCount) {
@@ -704,30 +705,390 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
     /**
      * 链表转换为红黑树 todo
+     *
      * @param tab
      * @param hash
      */
-    final void treeifyBin(Node<K,V>[] tab, int hash) {
+    final void treeifyBin(Node<K, V>[] tab, int hash) {
 
     }
 
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        putMapEntries(m, true);
+    }
+
+    @Override
+    public V remove(Object key) {
+        Node<K, V> e;
+        return (e = removeNode(hash(key), key, null, false, true)) == null ? null : e.value;
+    }
+
+    /**
+     * 移除节点 实现思路和put节点类似
+     *
+     * @param hash
+     * @param key
+     * @param value      要匹配的value值
+     * @param matchValue true :传入value和实际map中存储的相同才删除
+     * @param movable    如果为false，则删除时不移动其他节点
+     * @return 移除的节点 map中没有返回null
+     */
+    private Node<K, V> removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
+        Node<K, V>[] tab;
+        //要移除节点的前一个节点
+        Node<K, V> p;
+        int n, index;
+        //定位到要移除key对应的槽位
+        if ((tab = table) != null && (n = tab.length) > 0 && (p = tab[index = (n - 1) & hash]) != null) {
+            //要移除的节点
+            Node<K, V> node = null,
+                    e;
+            K k;
+            V v;
+            //槽位第一个节点就是要移除的
+            if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k)))) {
+                node = p;
+            } else if ((e = p.next) != null) {
+                //遍历槽位其它节点
+                if (p instanceof TreeNode) {
+                    node = ((TreeNode<K, V>) p).getTreeNode(hash, key);
+                } else {
+                    //链表
+                    do {
+                        if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) {
+                            node = e;
+                            break;
+                        }
+                        p = e;
+                    } while ((e = e.next) != null);
+                }
+            }
+
+            //条件校验 node非空  并且满足matchValue
+            if (node != null && (!matchValue || (v = node.value) == value || (value != null && value.equals(v)))) {
+                if (node instanceof TreeNode) {
+                    ((TreeNode<K, V>) node).removeTreeNode(this, tab, movable);
+                } else if (node == p) {
+                    //第一个节点就是要移除的节点
+                    tab[index] = node.next;
+                } else {
+                    //前一个节点的next指向移除节点的next
+                    p.next = node.next;
+                }
+                ++modCount;
+                --size;
+                afterNodeRemoval(node);
+                return node;
+            }
+        }
+
+        //没有找到节点 返回null
+        return null;
+    }
+
+    /**
+     * 清空map中元素
+     */
+    @Override
+    public void clear() {
+        Node<K, V>[] tab;
+        modCount++;
+        if ((tab = table) != null && size > 0) {
+            size = 0;
+            for (int i = 0; i < tab.length; ++i) {
+                tab[i] = null;
+            }
+        }
+    }
+
+    /**
+     * 如果map中存在传入的value，返回true
+     * @param value
+     * @return
+     */
+    @Override
+    public boolean containsValue(Object value) {
+        Node<K, V>[] tab;
+        V v;
+        if ((tab = table) != null && size > 0) {
+            //遍历table每一个位
+            for (int i = 0; i < tab.length; ++i) {
+                //遍历链表每一位
+                // todo 为什么这里不需要区分是链表还是红黑树  e.next是关键
+                for (Node<K, V> e = tab[i]; e != null; e = e.next) {
+                    //匹配到了value 返回true
+                    if ((v = e.value) == value || (value != null && value.equals(v))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * AbstractMap中的属性，默认修饰符 需要同包才能访问  所以这里需要重新定义下
+     */
+    transient Set<K>        keySet;
+    transient Collection<V> values;
+
+
+    @Override
+    public Set<K> keySet() {
+        Set<K> ks = keySet;
+        if (ks == null) {
+            ks = new KeySet();
+            keySet = ks;
+        }
+        return ks;
+    }
+
+    final class KeySet extends AbstractSet<K> {
+        @Override
+        public boolean contains(Object o) {
+            return containsKey(o);
+        }
+
+        @Override
+        public boolean remove(Object key) {
+            return removeNode(hash(key), key, null, false, true) != null;
+        }
+
+        @Override
+        public void clear() {
+            HashMapL.this.clear();
+        }
+
+        @Override
+        public Spliterator<K> spliterator() {
+            return new KeySpliterator<>(HashMapL.this, 0, -1, 0, 0);
+        }
+
+        @Override
+        public void forEach(Consumer<? super K> action) {
+            Node<K, V>[] tab;
+            if (action == null) {
+                throw  new NullPointerException();
+            }
+            if (size > 0 && (tab = table) != null) {
+                int mc = modCount;
+                for (int i = 0; i < tab.length; ++i) {
+                    for (Node<K, V> e = tab[i]; e != null; e = e.next) {
+                        action.accept(e.key);
+                    }
+                }
+                //校验map是否在遍历过程中有结构调整
+                if (modCount != mc) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+        }
+
+        @Override
+        public Iterator<K> iterator() {
+            return new KeyIterator();
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+    }
 
     public static void main(String[] args) {
         System.out.println(tableSizeFor(65));
     }
 
+    @Override
+    public Collection<V> values() {
+        Collection<V> vs = values;
+        if (vs == null) {
+            vs = new Values();
+            values = vs;
+        }
+        return vs;
+    }
 
+    final class Values extends AbstractCollection<V> {
+        @Override
+        public boolean contains(Object o) {
+            return containsValue(o);
+        }
+
+        @Override
+        public void clear() {
+            HashMapL.this.clear();
+        }
+
+        @Override
+        public Spliterator<V> spliterator() {
+            return new ValueSpliterator<> (HashMapL.this, 0, -1, 0, 0);
+        }
+
+        @Override
+        public void forEach(Consumer<? super V> action) {
+            Node<K, V> [] tab;
+            if (action == null) {
+                throw new NullPointerException();
+            }
+            if (size > 0 && (tab = table) != null) {
+                int mc = modCount;
+                for (int i = 0; i < tab.length; ++i) {
+                    for (Node<K, V> e = tab[i]; e !=null; e = e.next) {
+                        action.accept(e.value);
+                    }
+                }
+                if (modCount != mc) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+        }
+
+        @Override
+        public Iterator<V> iterator() {
+            return new ValueIterator();
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+    }
+
+    /**
+     * 返回此map中的set集合。该集合受到映射的支持，因此对映射的更改反映在集合中，反之亦然。
+     * 如果在对集合进行迭代时修改了映射(除了通过迭代器自己的删除操作，或者通过迭代器返回的映射条目上的setValue操作)，
+     * 那么迭代的结果是未定义的。
+     * 这个集合支持元素删除，它通过迭代器从映射中删除相应的映射。
+     * remove、Set.remove、removeAll、retainAll和clear操作。它不支持add或addAll操作。
+     * @return
+     */
     @Override
     public Set<Entry<K, V>> entrySet() {
+        Set<Map.Entry<K,V>> es;
+        return (es = entrySet) == null ? (entrySet = new HashMapL.EntrySet()) : es;
+    }
+
+    final class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+        @Override
+        public boolean contains(Object o) {
+            if (!(o instanceof Map.Entry)) {
+                return false;
+            }
+            Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
+            Object key = e.getKey();
+
+            Node<K, V> candidate = getNode(hash(key), key);
+            return candidate != null && candidate.equals(e);
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            if (o instanceof Map.Entry) {
+                Map.Entry<?, ?> e = (Entry<?, ?>) o;
+                Object key = e.getKey();
+                Object value = e.getValue();
+                return removeNode(hash(key), key, value, true, true) != null;
+            }
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            HashMapL.this.clear();
+        }
+
+        @Override
+        public Spliterator<Entry<K, V>> spliterator() {
+            return new EntrySpliterator<>(HashMap.this, 0, -1, 0, 0);
+        }
+
+        @Override
+        public void forEach(Consumer<? super Entry<K, V>> action) {
+            Node<K,V>[] tab;
+            if (action == null) {
+                throw new NullPointerException();
+            }
+            if (size > 0 && (tab = table) != null) {
+                int mc = modCount;
+                for (int i = 0; i < tab.length; ++i) {
+                    for (Node<K,V> e = tab[i]; e != null; e = e.next) {
+                        action.accept(e);
+                    }
+                }
+                if (modCount != mc) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+        }
+
+        @Override
+        public Iterator<Entry<K, V>> iterator() {
+            return new EntryIterator();
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+    }
+
+    @Override
+    public V getOrDefault(Object key, V defaultValue) {
+        Node<K, V> e;
+        return (e = getNode(hash(key), key)) == null ? defaultValue : e.value;
+    }
+
+    @Override
+    public V putIfAbsent(K key, V value) {
+        return putVal(hash(key), key, value, true, true);
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        return removeNode(hash(key), key, value,true, true) != null;
+    }
+
+    /**
+     * map中存在传入的key：oldValue，将value更新为newValue
+     * @param key
+     * @param oldValue
+     * @param newValue
+     * @return
+     */
+    @Override
+    public boolean replace(K key, V oldValue, V newValue) {
+        Node<K, V> e;
+        V v;
+        if ((e = getNode(hash(key), key)) != null
+                && ((v = e.value) == oldValue || (v != null && v.equals(oldValue)))) {
+            e.value = newValue;
+            afterNodeAccess(e);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public V replace(K key, V value) {
+        Node<K,V> e;
+        if ((e = getNode(hash(key), key)) != null) {
+            V oldValue = e.value;
+            e.value = value;
+            afterNodeAccess(e);
+            return oldValue;
+        }
         return null;
     }
 
     /**
      * 创建一个常规(非树)节点
+     *
      * @param hash
      * @param key
      * @param value
-     * @param next 当前节点的next节点
+     * @param next  当前节点的next节点
      * @return
      */
     Node<K, V> newNode(int hash, K key, V value, Node<K, V> next) {
