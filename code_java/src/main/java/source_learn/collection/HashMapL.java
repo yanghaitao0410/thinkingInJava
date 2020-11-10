@@ -1,10 +1,15 @@
 package source_learn.collection;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @Desc
@@ -1082,6 +1087,128 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         return null;
     }
 
+    @Override
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        //todo
+        return null;
+    }
+
+    @Override
+    public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        //todo
+        return null;
+    }
+
+    @Override
+    public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        //todo
+        return null;
+    }
+
+    @Override
+    public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        //todo
+        return null;
+    }
+
+    @Override
+    public void forEach(BiConsumer<? super K, ? super V> action) {
+        Node<K,V>[] tab;
+        if (action == null) {
+            throw new NullPointerException();
+        }
+        if (size > 0 && (tab = table) != null) {
+            int mc = modCount;
+            for (int i = 0; i < tab.length; ++i) {
+                for (Node<K,V> e = tab[i]; e != null; e = e.next) {
+                    action.accept(e.key, e.value);
+                }
+            }
+            if (modCount != mc) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+
+    @Override
+    public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        //todo
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        //todo
+    }
+
+    /**
+     * These methods are also used when serializing HashSets
+     * @return
+     */
+    final float loadFactor() {
+        return loadFactor;
+    }
+
+    final int capacity() {
+        return (table != null) ?  table.length : (threshold > 0) ? threshold : DEFAULT_INITIAL_CAPACITY;
+    }
+
+
+    /**
+     * 实现了
+     * 将HashMap实例的状态保存到一个流中(序列化)
+     *
+     * 首先输出HashMap的容量(bucket数组的长度 int)，然后输出元素个数(int，键-值映射的数量)，
+     * 最后输出每个key-value映射。键-值映射的输出没有特定的顺序。
+     * @param s
+     * @throws Exception
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws Exception {
+        int buckets = capacity();
+        s.defaultWriteObject();
+        s.writeInt(buckets);
+        s.writeInt(size);
+        internalWriteEntries(s);
+    }
+
+    private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        reinitialize();
+
+        if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
+            throw new InvalidObjectException("Illegal load factor: " + loadFactor);
+        }
+        //读取并忽略桶的数量 ,在下面通过当前map的负载因子，重新计算桶大小
+        s.readInt();
+        //读取实际size
+        int mappings = s.readInt();
+
+        if (mappings < 0) {
+            throw new InvalidObjectException("Illegal mappings count: " + mappings);
+        } else if  (mappings > 0) { //mappings = 0不处理
+            //loadFactor范围设置在0.25…4.0之间
+            float lf = Math.min(Math.max(0.25f, loadFactor), 4.0f);
+            float fc = (float)mappings / lf + 1.0f;
+            //需要创建的table大小
+            int cap = ((fc < DEFAULT_INITIAL_CAPACITY) ? DEFAULT_INITIAL_CAPACITY :
+                    (fc >= MAXINMUM_CAPACIRY) ? MAXINMUM_CAPACIRY : tableSizeFor((int) fc));
+            //需要扩容的临界值
+            float ft = (float) cap * lf;
+            threshold = (cap < MAXINMUM_CAPACIRY && ft < MAXINMUM_CAPACIRY) ? (int) ft : Integer.MAX_VALUE;
+
+            Node<K, V> [] tab = new Node[cap];
+            table = tab;
+
+            //从流中读取数据，设置到map中
+            for (int i = 0; i < mappings; i++) {
+                K key = (K) s.readObject();
+                V value = (V) s.readObject();
+                putVal(hash(key), key, value, false, false);
+            }
+
+        }
+
+    }
+
     /**
      * 创建一个常规(非树)节点
      *
@@ -1095,6 +1222,36 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         return new Node<>(hash, key, value, next);
     }
 
+    /**
+     * 重置map到初始默认状态。由clone和readObject调用。
+     */
+    void reinitialize() {
+        table = null;
+        entrySet = null;
+        keySet = null;
+        values = null;
+        modCount = 0;
+        threshold = 0;
+        size = 0;
+    }
+
+
+    /**
+     * 该方法仅被writeObject调用，以确保兼容的顺序。
+     * @param s
+     * @throws IOException
+     */
+    void internalWriteEntries(java.io.ObjectOutputStream s) throws IOException {
+        Node<K, V>[] tab;
+        if (size > 0 && (tab = table) != null) {
+            for (int i = 0; i < tab.length; ++i) {
+                for (Node<K, V> e = tab[i]; e != null; e = e.next) {
+                    s.writeObject(e.key);
+                    s.writeObject(e.value);
+                }
+            }
+        }
+    }
 
     static final class TreeNode<K, V> extends LinkedHashMapL.Entry<K, V> {
 
