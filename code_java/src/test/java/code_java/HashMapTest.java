@@ -1,5 +1,10 @@
 package code_java;
 
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 /**
@@ -24,6 +29,16 @@ public class HashMapTest {
                 System.out.println(map);
             }
         }.start();
+    }
+
+    @Test
+    public void testSerializabie() throws IOException {
+        HashMap hashMap = new HashMap();
+        hashMap.put("sadf", "sdfasd");
+        hashMap.put("sad", "sdfasd");
+        hashMap.put("sa", "sdfasd");
+        ObjectOutputStream outputStream = new ObjectOutputStream(new ByteArrayOutputStream());
+        outputStream.writeObject(hashMap);
     }
 
 

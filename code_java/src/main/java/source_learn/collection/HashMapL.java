@@ -28,7 +28,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
      * map的最大容量，如果任何一个带参数的构造函数隐式指定了较大的值，则使用。必须是2的幂<= 1<<30。
      * todo
      */
-    static final int MAXINMUM_CAPACIRY = 1 << 30;
+    static final int MAXIMUM_CAPACIRY = 1 << 30;
 
     /**
      * 创建对象时，构造函数中未指定时使用的默认加载因子。（达到容量的0.75时扩容）
@@ -226,7 +226,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         n |= n >>> 4;
         n |= n >>> 8;
         n |= n >>> 16;
-        return (n < 0) ? 1 : (n >= MAXINMUM_CAPACIRY) ? MAXINMUM_CAPACIRY : n + 1;
+        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACIRY) ? MAXIMUM_CAPACIRY : n + 1;
     }
 
     /* ---------------- Fields -------------- */
@@ -281,8 +281,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
         }
-        if (initialCapacity > MAXINMUM_CAPACIRY) {
-            initialCapacity = MAXINMUM_CAPACIRY;
+        if (initialCapacity > MAXIMUM_CAPACIRY) {
+            initialCapacity = MAXIMUM_CAPACIRY;
         }
         //loadFactor校验
         if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
@@ -332,7 +332,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
                 //通过负载因子 得出不会扩容的map容量
                 float ft = ((float) s / loadFactor) + 1.0F;
-                int t = ((ft < (float) MAXINMUM_CAPACIRY) ? (int) ft : MAXINMUM_CAPACIRY);
+                int t = ((ft < (float) MAXIMUM_CAPACIRY) ? (int) ft : MAXIMUM_CAPACIRY);
 
                 //通过 tableSizeFor方法得到2的幂次方容量
                 if (t > threshold) {
@@ -555,10 +555,10 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             //非初始化，空间不足时扩容
 
             //当前容量已经达到最大容量，直接返回当前table
-            if (oldCap >= MAXINMUM_CAPACIRY) {
+            if (oldCap >= MAXIMUM_CAPACIRY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
-            } else if ((newCap = oldCap << 1) < MAXINMUM_CAPACIRY && oldCap >= DEFAULT_INITIAL_CAPACITY) {
+            } else if ((newCap = oldCap << 1) < MAXIMUM_CAPACIRY && oldCap >= DEFAULT_INITIAL_CAPACITY) {
                 //table长度翻倍后在允许范围内，并且翻倍前的长度大于默认长度
                 //threshold翻倍
                 newThr = oldThr << 1;
@@ -580,7 +580,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             //下次扩容前可以存储的数据量
             float ft = (float) newCap * loadFactor;
             //需要确保table容量和不需要扩容的容量都在允许范围内 否则直接设置一个最大值
-            newThr = (newCap < MAXINMUM_CAPACIRY && ft < (float) MAXINMUM_CAPACIRY ? (int) ft : Integer.MAX_VALUE);
+            newThr = (newCap < MAXIMUM_CAPACIRY && ft < (float) MAXIMUM_CAPACIRY ? (int) ft : Integer.MAX_VALUE);
         }
 
         //更新threshold
@@ -671,7 +671,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     void resize(int newCapacity) {   //传入新的容量
         Node[] oldTable = table;    //引用扩容前的Entry数组
         int oldCapacity = oldTable.length;
-        if (oldCapacity == MAXINMUM_CAPACIRY) {  //扩容前的数组大小如果已经达到最大(2^30)了
+        if (oldCapacity == MAXIMUM_CAPACIRY) {  //扩容前的数组大小如果已经达到最大(2^30)了
             threshold = Integer.MAX_VALUE; //修改阈值为int的最大值(2^31-1)，这样以后就不会扩容了
             return;
         }
@@ -1190,10 +1190,10 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             float fc = (float)mappings / lf + 1.0f;
             //需要创建的table大小
             int cap = ((fc < DEFAULT_INITIAL_CAPACITY) ? DEFAULT_INITIAL_CAPACITY :
-                    (fc >= MAXINMUM_CAPACIRY) ? MAXINMUM_CAPACIRY : tableSizeFor((int) fc));
+                    (fc >= MAXIMUM_CAPACIRY) ? MAXIMUM_CAPACIRY : tableSizeFor((int) fc));
             //需要扩容的临界值
             float ft = (float) cap * lf;
-            threshold = (cap < MAXINMUM_CAPACIRY && ft < MAXINMUM_CAPACIRY) ? (int) ft : Integer.MAX_VALUE;
+            threshold = (cap < MAXIMUM_CAPACIRY && ft < MAXIMUM_CAPACIRY) ? (int) ft : Integer.MAX_VALUE;
 
             Node<K, V> [] tab = new Node[cap];
             table = tab;
