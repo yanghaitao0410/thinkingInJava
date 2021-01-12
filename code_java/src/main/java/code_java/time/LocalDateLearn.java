@@ -7,9 +7,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * @author yht
@@ -63,5 +64,31 @@ public class LocalDateLearn {
         System.out.println(weekOfMonth2);
         System.out.println(weekOfYear);
         System.out.printf(timeStr);
+    }
+
+    /**
+     * 获取一个时间范围内的所有周日  最后一天不是周日也放进去
+     */
+    @Test
+    public void getSundayBetweenDuringTest() {
+        LocalDate start = LocalDate.of(2020, 9, 1);
+        LocalDate end = LocalDate.of(2021, 1, 10);
+
+        LocalDate tmp = LocalDate.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
+        Set<String> sundaySet = new HashSet<>();
+        String date;
+        while (tmp.isBefore(end) || tmp.isEqual(end)) {
+            date = tmp.with(DayOfWeek.SUNDAY).format(DateTimeFormatter.ISO_LOCAL_DATE);
+            sundaySet.add(date);
+            tmp = tmp.plusWeeks(1);
+        }
+
+        // 使用set集合接收
+        LocalDate endSunday = end.with(DayOfWeek.SUNDAY);
+        //最后一周到哪天就是哪天
+        if (!endSunday.isEqual(end)) {
+            sundaySet.add(end.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
+
     }
 }

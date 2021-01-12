@@ -2,6 +2,7 @@ package code_java;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,4 +24,10 @@ public class StringTest {
 
         System.out.println(list);
     }
+
+    @Test
+    public void testFormat2() {
+        System.out.println(String.format("xcvasd:%s sdfas", null));
+    }
+
 }

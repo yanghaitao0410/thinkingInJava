@@ -3,6 +3,7 @@ package source_learn.concurrent.locks;
 import sun.misc.Unsafe;
 
 import java.io.Serializable;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * @Desc
@@ -75,7 +76,7 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
         static final int CANCELLED = 1;
 
         /**
-         * waitStatus值，表示后续线程需要解除停车
+         * waitStatus值，表示后续线程需要唤醒 unpark
          */
         static final int SIGNAL = -1;
 
@@ -234,18 +235,22 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
      * @return 插入节点的前一个节点
      */
     private Node enq(final Node node) {
+        //循环
         for (;;) {
             Node t = tail;
+            //初始化的第一次循环
             if (t == null) {
-                //t为null说明还未初始化
+                //设置新的虚拟头节点
                 if (compareAndSetHead(new Node())) {
+                    //t为null说明还未初始化 tail节点就是head
                     tail = head;
-                } else {
-                    node.prev = t;
-                    if (compareAndSetTail(t, node)) {
-                        t.next = node;
-                        return t;
-                    }
+                }
+            } else {
+                //二次之后的循环 此时已经有了head和tail节点 设置节点node
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {
+                    t.next = node;
+                    return t;
                 }
             }
         }
@@ -261,6 +266,7 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
         // Try the fast path of enq; backup to full enq on failure
         //将mode节点放到队列的tail节点之后
         Node pred = tail;
+        //tail节点有值 直接设置
         if (pred != null) {
             node.prev = pred;
             if (compareAndSetTail(pred, node)) {
@@ -268,21 +274,225 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
                 return node;
             }
         }
+        //这里再调用一次是处理没有初始化的情况
         enq(node);
         return node;
     }
 
 
+    /**
+     * 将队列头设置为node，从而将原队列节点抛弃。 仅被acquire方法调用。
+     * 为了GC并抑制不必要的信号和遍历，还清空了未使用的字段
+     * @param node
+     */
+    private void setHead(Node node) {
+        head = node;
+        node.thread = null;
+        node.prev = null;
+    }
+
+    /**
+     * 唤醒node的后继节点（如果存在的话）
+     * @param node
+     */
+    private void unparkSuccessor(Node node) {
+        /**
+         * 如果status是负值（可能需要信号 signal） ,试着在发出信号之前更新状态
+         * 如果调用失败或者status被等待的线程改变了，也没有问题
+         */
+        int ws = node.waitStatus;
+        if (ws < 0) {
+            compareAndSetWaitStatus(node, ws, 0);
+        }
+
+        /**
+         * 要唤醒的线程被保存在后继节点中，后继节点通常就是下一个节点。
+         * 但如果当前节点的下一个next的status是cancelled或表面上next节点为空，从尾部向前遍历可以找到实际的未取消的后继。
+         */
+        Node s = node.next;
+        if (s == null || s.waitStatus > 0) {
+            s = null;
+            //节点从后向前遍历
+            for (Node t = tail; t != null && t != node; t = t.prev) {
+                //不停覆盖s  找到最先的status是负值的节点
+                if (t.waitStatus <= 0) {
+                    s = t;
+                }
+            }
+        }
+
+        //程序运行到这里 就找到了最靠近node的后继节点s 唤醒它的线程
+        if (s != null) {
+            LockSupport.unpark(s.thread);
+        }
+    }
+
+    /**
+     * shard 模式 放开操作， 让后继节点signals 状态的唤醒 ，其它状态propagation
+     * todo （对于独占模式，如果需要signal，释放仅相当于调用head的unparkSuccessor。）
+     */
+    private void doReleaseShared() {
+
+        /*
+            确保release操作传播，即使有其他正在进行的acquires/releases。
+            head节点的waitStatus 是 Node.SIGNAL的时候尝试解锁它的继任者。
+            其它状态，则将状态设置为PROPAGATE，以确保在release时继续传播。
+            此外，在执行此操作时，我们必须进行循环，以防添加了新节点。
+            此外，与unpark继任人的其他使用不同，我们需要知道CAS重置状态是否失败，如果失败，需要重新检查。
+         */
+        for (;;) {
+            Node h = head;
+            if (h != null && h != tail) {
+                int ws = h.waitStatus;
+                //head节点是Node.SIGNAL状态进行的操作
+                if (ws == Node.SIGNAL) {
+                    //唤醒线程 没有成功进入下一次循环
+                    if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0)) {
+                        continue;
+                    }
+                    //h被唤醒，唤醒h的后继节点
+                    unparkSuccessor(h);
+                } else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE)) {
+                    //0状态  改成PROPAGATE 下次无条件传播
+                    // loop on failed CAS
+                    continue;
+                }
+            }
+            //head节点被重新设置了 需要重新遍历
+            // loop if head changed
+            if (h == head) {
+                break;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param node
+     * @param propagate
+     */
+    private void setHeadAndPropagate(Node node, int propagate) {
+        //旧head
+        Node h = head;
+
+        setHead(node);
+
+        /*
+        向下一个排队节点发送信号的情况：
+        调用者指示Propagation状态，或者由之前的操作记录(如h.waitStatus，在setHead之前或之后)
+        这块使用了waitStatus的符号检查（sign-check），因为PROPAGATE状态可能转换为SIGNAL
+
+        下一个节点正在共享模式（shared mode）中等待，或者是其它状况，我们不知道，因为它看起来是空的
+
+        这两种检查的保守性可能会导致不必要的唤醒，但只有在有多个竞争 acquires/releases时才会出现，所以大多数检查都需要现在或马上发出信号signals。
+         */
+        if (propagate > 0 || h == null || h.waitStatus < 0 || (h = head) == null || h.waitStatus < 0) {
+            Node s = node.next;
+            if (s == null || s.isShared()) {
+                doReleaseShared();
+            }
+        }
+    }
 
 
+    /**
+     * 取消正在进行的尝试调用 acquire方法的节点
+     * @param node
+     */
+    private void cancelAcquire(Node node) {
+        if (node == null) {
+            return;
+        }
 
+        node.thread = null;
 
+        //跳过cancelled状态的前节点
+        Node pred = node.prev;
+        while (pred.waitStatus > 0)  {
 
+            /**
+             * 等价于
+             * pred = pred.prev;
+             * node.prev = pred
+             */
+            node.prev = pred = pred.prev;
+        }
 
+        //前节点的next
+        // predNext is the apparent node to unsplice. CASes below will
+        // fail if not, in which case, we lost race vs another cancel
+        // or signal, so no further action is necessary.
+        Node predNext = pred.next;
 
+        //这里可以使用无条件写（unconditional write）代替CAS。
+        // 在这个原子步骤之后，其他节点可以跳过我们。在此之前，我们不受其他线程的干扰。
+        node.waitStatus = Node.CANCELLED;
 
+        //如果node是末尾节点 将node移除 tail向前移动
+        if (node == tail && compareAndSetTail(node, pred)) {
+            //设置前一个节点的next为null
+            compareAndSetNext(pred, predNext, null);
+        } else {
+            //如果后继者需要信号，试着设置pred的下一个链接，这样它就会得到一个信号。否则唤醒它传播。
+            int ws;
+            if (pred != head &&
+                    ((ws = pred.waitStatus) == Node.SIGNAL ||
+                            (ws <= 0 && compareAndSetWaitStatus(pred, ws, Node.SIGNAL))) &&
+                    pred.thread != null) {
 
+                Node next = node.next;
 
+                if (next != null && next.waitStatus <= 0) {
+                    compareAndSetNext(pred, predNext, next);
+                }
+            } else {
+                unparkSuccessor(node);
+            }
+
+            // help GC
+            node.next = node;
+        }
+    }
+
+    /**
+     * 检查并更新acquire方法获取失败的的节点的状态。 如果线程应阻塞，则返回true。
+     * 这是所有获取acquire方法循环中的主要信号控制。 要求pred == node.prev。
+     *
+     * @param pred
+     * @param node
+     * @return
+     */
+    private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+
+    }
+
+    /**
+     * 中断当前线程
+     */
+    static void selfInterrupt() {
+        Thread.currentThread().interrupt();
+    }
+
+    /**
+     * park and then check if interrupted
+     * @return
+     */
+    private final boolean parkAndCheckInterrupt() {
+        /*
+        除非有许可，否则出于线程调度目的禁用当前线程。
+        如果许可证可用，则将其消耗掉，并立即返回到调用处；否则，出于线程调度目的，当前线程将被禁用并处于休眠状态，
+        直到发生以下三种情况之一：
+            其他一些线程以当前线程作为目标调用unpark
+            其他线程中断当前线程
+            调用虚假地(也就是说，没有理由地)返回。
+
+        此方法不报告是哪一种情况导致该方法返回。调用者应该首先重新检查导致线程park的条件。
+        例如，调用者还可以决定返回时线程的中断状态。
+         */
+
+        LockSupport.park(this);
+        return Thread.interrupted();
+    }
 
 
 
@@ -344,10 +554,19 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
         return unsafe.compareAndSwapObject(this, tailOffSet, expect, update);
     }
 
+    /**
+     * CAS waitStatus field of a node.
+     */
+    private static final boolean compareAndSetWaitStatus(Node node, int expect, int update) {
+        return unsafe.compareAndSwapInt(node, waitStatusOffset, expect, update);
+    }
 
-
-
-
+    /**
+     * CAS next field of a node.
+     */
+    private  static final boolean compareAndSetNext(Node node, Node expect, Node update) {
+        return unsafe.compareAndSwapObject(node, nextOffset, expect, update);
+    }
 
 
 

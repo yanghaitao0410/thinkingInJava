@@ -24,11 +24,14 @@ public class StreamTest {
         list.add("546uytyhgtrhe");
         list.add("fgtresg45");
 
-        System.out.println(list.stream().reduce((r1, r2) ->  r1.concat(",").concat(r2)).get());
+//        System.out.println(list.stream().reduce((r1, r2) ->  r1.concat(",").concat(r2)).get());
+//
+//        System.out.println(list.stream().distinct().collect(Collectors.toList()));
+//        System.out.println(list.stream().distinct().collect(Collectors.toList()));
+//        System.out.println(list.stream().distinct().collect(Collectors.toList()));
 
-        System.out.println(list.stream().distinct().collect(Collectors.toList()));
-        System.out.println(list.stream().distinct().collect(Collectors.toList()));
-        System.out.println(list.stream().distinct().collect(Collectors.toList()));
+        String str = list.stream().map(x -> x).reduce((x1, x2) -> x1.concat(",").concat(x2)).get();
+        System.out.println("str" + str);
 
     }
 
