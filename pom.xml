@@ -11,6 +11,7 @@
         <module>leetcode</module>
         <module>nowcode</module>
         <module>zookeeper_learn</module>
+        <module>code_2023</module>
     </modules>
     <packaging>pom</packaging>
 
