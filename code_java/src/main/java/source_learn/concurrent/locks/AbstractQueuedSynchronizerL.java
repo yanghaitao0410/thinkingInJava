@@ -463,7 +463,7 @@ public class AbstractQueuedSynchronizerL extends AbstractOwnableSynchronizerL im
      * @return
      */
     private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
-
+        return false;
     }
 
     /**

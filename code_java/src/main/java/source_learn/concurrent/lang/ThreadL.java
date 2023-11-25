@@ -259,7 +259,7 @@ public class ThreadL implements Runnable {
             }
         }
 
-        g.addUnstarted();
+//        g.addUnstarted();
 
         this.group = g;
         this.daemon = parent.isDaemon();
@@ -268,7 +268,7 @@ public class ThreadL implements Runnable {
         if (security == null || isCCLOverridden(parent.getClass())) {
             this.contextClassLoader = parent.getContextClassLoader();
         } else {
-            this.contextClassLoader = parent.contextClassLoader;
+//            this.contextClassLoader = parent.contextClassLoader;
         }
 
         this.inheritedAccessControlContext = acc != null ? acc : AccessController.getContext();
@@ -276,10 +276,10 @@ public class ThreadL implements Runnable {
 
         setPriority(priority);
 
-        if (parent.inheritableThreadLocals != null) {
-            this.inheritableThreadLocals =
-                    ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);
-        }
+//        if (parent.inheritableThreadLocals != null) {
+//            this.inheritableThreadLocals =
+//                    ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);
+//        }
 
         this.stackSize = stackSize;
 
@@ -342,7 +342,7 @@ public class ThreadL implements Runnable {
         }
 
         //通知group该线程即将启动，以便将其添加到group的线程列表中，并减少group的未启动计数。
-        group.add(this);
+//        group.add(this);
 
         boolean started = false;
         try {
@@ -351,7 +351,7 @@ public class ThreadL implements Runnable {
         } finally {
             try {
                 if (!started) {
-                    group.threadStartFailed(this);
+//                    group.threadStartFailed(this);
                 }
             } catch (Throwable ignore) {
                 //什么也不做。如果start0抛出了一个Throwable，那么它将被传递到调用堆栈
@@ -379,7 +379,7 @@ public class ThreadL implements Runnable {
      */
     private void exit() {
         if (group != null) {
-            group.threadTerminated(this);
+//            group.threadTerminated(this);
             group = null;
         }
         target = null;
@@ -387,7 +387,7 @@ public class ThreadL implements Runnable {
         inheritableThreadLocals = null;
         inheritedAccessControlContext = null;
         blocker = null;
-        uncaughtExceptionHandler = null;
+//        uncaughtExceptionHandler = null;
     }
 
     /**
@@ -404,15 +404,15 @@ public class ThreadL implements Runnable {
      * 中断一个非活动线程不需要有任何影响。
      */
     public void interrupt() {
-        if (this != Thread.currentThread()) {
-            checkAccess();
-        }
+//        if (this != Thread.currentThread()) {
+//            checkAccess();
+//        }
 
         synchronized (blockerLock) {
             Interruptible b = blocker;
             if (b != null) {
                 interrupt0(); //设置中断标志
-                b.interrupt(this);
+//                b.interrupt(this);
                 return;
             }
         }
@@ -429,7 +429,8 @@ public class ThreadL implements Runnable {
      * @return
      */
     public static boolean interrupted() {
-        return currentThread().isInterrupted(true);
+//        return currentThread().isInterrupted(true);
+        return false;
     }
 
     /**
@@ -602,7 +603,7 @@ public class ThreadL implements Runnable {
     private final void checkAccess() {
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
-            security.checkAccess(this);
+//            security.checkAccess(this);
         }
     }
 
@@ -616,13 +617,15 @@ public class ThreadL implements Runnable {
     @Override
     public String toString() {
         ThreadGroup group = getThreadGroup();
-        if (group != null) {
-            return "Thread[" + getName() + "," + getPriority() + "," +
-                    group.getName() + "]";
-        } else {
-            return "Thread[" + getName() + "," + getPriority() + "," +
-                    "" + "]";
-        }
+//        if (group != null) {
+//            return "Thread[" + getName() + "," + getPriority() + "," +
+//                    group.getName() + "]";
+//        } else {
+//            return "Thread[" + getName() + "," + getPriority() + "," +
+//                    "" + "]";
+//        }
+
+        return null;
     }
 
     private static final RuntimePermission SUBCLASS_IMPLEMENTATION_PERMISSION =

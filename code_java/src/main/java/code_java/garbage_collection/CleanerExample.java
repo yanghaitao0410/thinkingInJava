@@ -1,9 +1,9 @@
 package code_java.garbage_collection;
 
-import java.lang.ref.Cleaner;
+//import java.lang.ref.Cleaner;
 
 /**
- * @Desc
+ * @Desc 需要jdk9及以上
  * @Author water
  * @date 2020/5/18
  **/
@@ -11,12 +11,12 @@ public class CleanerExample {
 
     public static void main(String[] args) {
         //通过工厂方法创建cleaner实例
-        Cleaner cleaner = Cleaner.create();
-        for (int i = 0; i < 10; i++) {
-            String id = Integer.toString(i);
-            MyObject myObject = new MyObject(id);
-            cleaner.register(myObject, new CleanerRunnable(id));
-        }
+//        Cleaner cleaner = Cleaner.create();
+//        for (int i = 0; i < 10; i++) {
+//            String id = Integer.toString(i);
+//            MyObject myObject = new MyObject(id);
+//            cleaner.register(myObject, new CleanerRunnable(id));
+//        }
 
         //myObjects are not reachable anymore
         //do some other memory intensive work

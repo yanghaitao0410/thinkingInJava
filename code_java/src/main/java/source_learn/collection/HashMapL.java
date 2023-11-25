@@ -410,7 +410,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
                 //红黑树方式存储的节点
                 if (first instanceof TreeNode) {
-                    return ((TreeNode < K,V > first).getTreeNode(hash, key));
+//                    return ((TreeNode < K,V >) first).getTreeNode(hash, key);
                 }
 
                 //循环遍历链表方式存储的节点
@@ -481,7 +481,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             tab[i] = newNode(hash, key, value, null);
         } else {
             //要替换的旧节点
-            Node<K, V> e;
+            Node<K, V> e = null;
             //传入key临时变量
             K k;
 
@@ -490,7 +490,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 e = p;
             } else if (p instanceof TreeNode) {
                 //红黑树插入节点
-                e = ((TreeNode<K, V>) p).putTreeVal(this, tab, hash, key, value);
+//                e = ((TreeNode<K, V>) p).putTreeVal(this, tab, hash, key, value);
             } else {
                 //在链表中新增或替换节点
                 for (int binCount = 0; ; ++binCount) {
@@ -520,7 +520,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 if (!onlyIfAbsent || oldValue == null) {
                     e.value = value;
                 }
-                afterNodeAccess(e);
+//                afterNodeAccess(e);
                 return oldValue;
             }
         }
@@ -530,7 +530,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         //如果自增后元素数量大于threshold 扩容
         if (++size > threshold)
             resize();
-        afterNodeInsertion(evict);
+//        afterNodeInsertion(evict);
         //新增节点返回null 因为没有旧值
         return null;
     }
@@ -603,7 +603,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                         newTab[e.hash & (newCap - 1)] = e;
                     } else if (e instanceof TreeNode) {
                         //结构是红黑树 todo
-                        ((HashMapL.TreeNode<K, V>) e).split(this, newTab, j, oldCap);
+//                        ((HashMapL.TreeNode<K, V>) e).split(this, newTab, j, oldCap);
                     } else {
                         /*
                         链表中有多个节点情况:
@@ -757,7 +757,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             } else if ((e = p.next) != null) {
                 //遍历槽位其它节点
                 if (p instanceof TreeNode) {
-                    node = ((TreeNode<K, V>) p).getTreeNode(hash, key);
+//                    node = ((TreeNode<K, V>) p).getTreeNode(hash, key);
                 } else {
                     //链表
                     do {
@@ -773,7 +773,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
             //条件校验 node非空  并且满足matchValue
             if (node != null && (!matchValue || (v = node.value) == value || (value != null && value.equals(v)))) {
                 if (node instanceof TreeNode) {
-                    ((TreeNode<K, V>) node).removeTreeNode(this, tab, movable);
+//                    ((TreeNode<K, V>) node).removeTreeNode(this, tab, movable);
                 } else if (node == p) {
                     //第一个节点就是要移除的节点
                     tab[index] = node.next;
@@ -783,7 +783,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
                 }
                 ++modCount;
                 --size;
-                afterNodeRemoval(node);
+//                afterNodeRemoval(node);
                 return node;
             }
         }
@@ -867,7 +867,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Spliterator<K> spliterator() {
-            return new KeySpliterator<>(HashMapL.this, 0, -1, 0, 0);
+//            return new KeySpliterator<>(HashMapL.this, 0, -1, 0, 0);
+            return null;
         }
 
         @Override
@@ -892,7 +893,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Iterator<K> iterator() {
-            return new KeyIterator();
+//            return new KeyIterator();
+            return null;
         }
 
         @Override
@@ -928,7 +930,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Spliterator<V> spliterator() {
-            return new ValueSpliterator<> (HashMapL.this, 0, -1, 0, 0);
+//            return new ValueSpliterator<> (HashMapL.this, 0, -1, 0, 0);
+            return null;
         }
 
         @Override
@@ -952,7 +955,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Iterator<V> iterator() {
-            return new ValueIterator();
+//            return new ValueIterator();
+            return null;
         }
 
         @Override
@@ -1006,7 +1010,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Spliterator<Entry<K, V>> spliterator() {
-            return new EntrySpliterator<>(HashMap.this, 0, -1, 0, 0);
+//            return new EntrySpliterator<>(HashMap.this, 0, -1, 0, 0);
+            return null;
         }
 
         @Override
@@ -1030,7 +1035,8 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            return new EntryIterator();
+//            return new EntryIterator();
+            return null;
         }
 
         @Override
@@ -1069,7 +1075,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         if ((e = getNode(hash(key), key)) != null
                 && ((v = e.value) == oldValue || (v != null && v.equals(oldValue)))) {
             e.value = newValue;
-            afterNodeAccess(e);
+//            afterNodeAccess(e);
             return true;
         }
         return false;
@@ -1081,7 +1087,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
         if ((e = getNode(hash(key), key)) != null) {
             V oldValue = e.value;
             e.value = value;
-            afterNodeAccess(e);
+//            afterNodeAccess(e);
             return oldValue;
         }
         return null;
@@ -1138,6 +1144,7 @@ public class HashMapL<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clon
     @Override
     protected Object clone() throws CloneNotSupportedException {
         //todo
+        return null;
     }
 
     /**

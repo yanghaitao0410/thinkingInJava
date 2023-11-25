@@ -125,8 +125,8 @@ public class HashSetL<E> extends AbstractSet<E> implements Set<E>, Cloneable, Se
         s.defaultWriteObject();
 
         // Write out HashMap capacity and load factor
-        s.writeInt(map.capacity());
-        s.writeFloat(map.loadFactor());
+//        s.writeInt(map.capacity());
+//        s.writeFloat(map.loadFactor());
 
         // Write out size
         s.writeInt(map.size());
@@ -166,9 +166,9 @@ public class HashSetL<E> extends AbstractSet<E> implements Set<E>, Cloneable, Se
         //根据大小和负载因子设置容量，确保HashMap至少已满25％，但要限制在最大容量以内。
         capacity = (int) Math.min(size * Math.min(1 / loadFactor, 4.0f), HashMapL.MAXIMUM_CAPACIRY);
 
-        map = (((HashSetL<?>) this) instanceof LinkedHashSetL ?
-                new LinkedHashMap<E,Object>(capacity, loadFactor) :
-                new HashMap<E,Object>(capacity, loadFactor));
+//        map = (((HashSetL<?>) this) instanceof LinkedHashSetL ?
+//                new LinkedHashMap<E,Object>(capacity, loadFactor) :
+//                new HashMap<E,Object>(capacity, loadFactor));
 
 
         // Read in all elements in the proper order.
